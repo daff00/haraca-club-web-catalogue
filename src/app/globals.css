@@ -1,8 +1,42 @@
 @import "tailwindcss";
 
+/* ─── Shadcn UI Variables ─────────────────────────────── */
+@layer base {
+  :root {
+    --background: 250 243 235;        /* #FAF7F2 broken white */
+    --foreground: 44 40 36;           /* #2C2824 charcoal */
+
+    --card: 240 235 224;              /* #F0EBE0 warm cream */
+    --card-foreground: 44 40 36;
+
+    --popover: 250 243 235;
+    --popover-foreground: 44 40 36;
+
+    --primary: 44 40 36;              /* #2C2824 charcoal */
+    --primary-foreground: 250 243 235;
+
+    --secondary: 240 235 224;         /* #F0EBE0 warm cream */
+    --secondary-foreground: 44 40 36;
+
+    --muted: 245 239 230;             /* #F5EFE6 linen */
+    --muted-foreground: 140 113 85;   /* #8C7155 camel */
+
+    --accent: 168 148 120;            /* #A89478 khaki */
+    --accent-foreground: 250 243 235;
+
+    --destructive: 220 38 38;
+    --destructive-foreground: 250 243 235;
+
+    --border: 217 206 191;            /* #D9CEBF beige */
+    --input: 217 206 191;
+    --ring: 44 40 36;
+
+    --radius: 0.25rem;                /* 4px — restrained, premium */
+  }
+}
+
 /* ─── Haraca Color Tokens ─────────────────────────────── */
 :root {
-  /* Core palette */
   --color-bg:            #FAF7F2;
   --color-surface:       #F0EBE0;
   --color-surface-alt:   #F5EFE6;
@@ -15,25 +49,13 @@
   --color-text-muted:    #8C7155;
   --color-dark:          #1A1714;
 
-  /* Semantic tokens — public site */
-  --btn-primary-bg:      #2C2824;
-  --btn-primary-text:    #FAF7F2;
-  --card-bg:             #F0EBE0;
-  --nav-bg:              #FAF7F2;
-  --footer-bg:           #1A1714;
-  --badge-best-seller:   #6B4F35;
-  --badge-new:           #A89478;
-
-  /* Semantic tokens — admin panel */
   --admin-sidebar:       #2C2824;
   --admin-sidebar-text:  #FAF7F2;
   --admin-content-bg:    #FAF7F2;
 
-  /* Spacing */
   --section-padding-y:   80px;
   --content-max-width:   1280px;
 
-  /* Border radius */
   --radius-btn:          2px;
   --radius-card:         4px;
   --radius-input:        4px;
@@ -42,7 +64,8 @@
 
 /* ─── Base ────────────────────────────────────────────── */
 * {
-  color-scheme: light; /* Light mode only — no dark mode */
+  color-scheme: light;
+  border-color: hsl(var(--border));
 }
 
 html {
@@ -50,8 +73,8 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: "DM Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -79,14 +102,7 @@ h1, h2 {
   padding-inline: 24px;
 }
 
-/* ─── Scrollbar (minimal) ─────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-surface-alt);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
+/* ─── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
