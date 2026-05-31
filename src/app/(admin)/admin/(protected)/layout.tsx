@@ -1,5 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function AdminLayout({
   children,
@@ -11,8 +13,11 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-[var(--admin-content-bg)]">
-      {/* TODO: Add AdminSidebar and AdminTopBar components */}
-      <div className="p-8">{children}</div>
+      <AdminSidebar />
+      <div className="ml-60">
+        {children}
+      </div>
+      <Toaster position="bottom-right" />
     </div>
   );
 }
