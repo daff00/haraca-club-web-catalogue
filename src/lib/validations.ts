@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ProductSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
   price: z.coerce.number().min(1, "Price must be greater than 0"),
   category: z.enum(["TANKTOP", "OVERSIZE", "REGULAR", "SABLON"]),
@@ -10,7 +10,7 @@ export const ProductSchema = z.object({
     z.object({
       name: z.string(),
       hex: z.string(),
-    })
+    }),
   ),
   photos: z.array(z.string()),
   description: z.string().min(1, "Description is required"),
@@ -22,7 +22,7 @@ export const ProductSchema = z.object({
 });
 
 export const LookbookPhotoSchema = z.object({
-    photoUrl: z.string().url(),
+  photoUrl: z.string().url(),
   category: z.enum(["DAILY_CASUAL", "OVERSIZE_STYLE", "COUPLE_GROUP"]),
   productId: z.string().optional().nullable(),
   modelSize: z.string().min(1),
@@ -31,7 +31,7 @@ export const LookbookPhotoSchema = z.object({
 });
 
 export const TestimonialSchema = z.object({
-    customerName: z.string().min(1),
+  customerName: z.string().min(1),
   photoUrl: z.string().url().optional().or(z.literal("")),
   rating: z.coerce.number().min(1).max(5),
   text: z.string().min(1),
@@ -39,7 +39,7 @@ export const TestimonialSchema = z.object({
 });
 
 export const BannerSchema = z.object({
-    page: z.enum(["HOME", "SHOP"]),
+  page: z.enum(["HOME", "SHOP"]),
   photoUrl: z.string().url(),
   isActive: z.boolean().default(false),
 });
@@ -51,13 +51,13 @@ export const BrandContentSchema = z.object({
       icon: z.string(),
       title: z.string(),
       description: z.string(),
-    })
+    }),
   ),
   behindPhotos: z.array(
     z.object({
       url: z.string(),
       caption: z.string(),
-    })
+    }),
   ),
 });
 
