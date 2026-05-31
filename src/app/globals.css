@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* ─── Haraca Color Tokens ─────────────────────────────── */
+:root {
+  /* Core palette */
+  --color-bg:            #FAF7F2;
+  --color-surface:       #F0EBE0;
+  --color-surface-alt:   #F5EFE6;
+  --color-border:        #D9CEBF;
+  --color-accent:        #A89478;
+  --color-accent-hover:  #C4AD94;
+  --color-brown:         #6B4F35;
+  --color-brown-dark:    #4A3728;
+  --color-text:          #2C2824;
+  --color-text-muted:    #8C7155;
+  --color-dark:          #1A1714;
+
+  /* Semantic tokens — public site */
+  --btn-primary-bg:      #2C2824;
+  --btn-primary-text:    #FAF7F2;
+  --card-bg:             #F0EBE0;
+  --nav-bg:              #FAF7F2;
+  --footer-bg:           #1A1714;
+  --badge-best-seller:   #6B4F35;
+  --badge-new:           #A89478;
+
+  /* Semantic tokens — admin panel */
+  --admin-sidebar:       #2C2824;
+  --admin-sidebar-text:  #FAF7F2;
+  --admin-content-bg:    #FAF7F2;
+
+  /* Spacing */
+  --section-padding-y:   80px;
+  --content-max-width:   1280px;
+
+  /* Border radius */
+  --radius-btn:          2px;
+  --radius-card:         4px;
+  --radius-input:        4px;
+  --radius-badge:        20px;
+}
+
+/* ─── Base ────────────────────────────────────────────── */
+* {
+  color-scheme: light; /* Light mode only — no dark mode */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography ──────────────────────────────────────── */
+.font-display {
+  font-family: "Cormorant Garamond", serif;
+}
+
+h1, h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+}
+
+/* ─── Utility Classes ─────────────────────────────────── */
+.section-padding {
+  padding-top: var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
+}
+
+.content-wrapper {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* ─── Scrollbar (minimal) ─────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}

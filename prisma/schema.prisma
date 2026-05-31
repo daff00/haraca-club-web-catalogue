@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────
+
+enum Category {
+  TANKTOP
+  OVERSIZE
+  REGULAR
+  SABLON
+}
+
+enum ProductLabel {
+  BEST_SELLER
+  NEW_ARRIVAL
+}
+
+enum LookbookCategory {
+  DAILY_CASUAL
+  OVERSIZE_STYLE
+  COUPLE_GROUP
+}
+
+enum BannerPage {
+  HOME
+  SHOP
+}
+
+// ─── Models ─────────────────────────────────────────────
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  price       Int
+  category    Category
+  sizes       String[]
+  colors      Json
+  photos      String[]
+  description String         @db.Text
+  material    String
+  labels      ProductLabel[]
+  linkShopee  String?
+  linkTiktok  String?
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  lookbookPhotos LookbookPhoto[]
+}
+
+model LookbookPhoto {
+  id         String           @id @default(cuid())
+  photoUrl   String
+  category   LookbookCategory
+  productId  String?
+  product    Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  modelSize  String
+  modelStats String
+  order      Int              @default(0)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model Testimonial {
+  id           String   @id @default(cuid())
+  customerName String
+  photoUrl     String?
+  rating       Int
+  text         String   @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Banner {
+  id        String     @id @default(cuid())
+  page      BannerPage
+  photoUrl  String
+  isActive  Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model BrandContent {
+  id           String   @id @default(cuid())
+  brandStory   String   @db.Text
+  brandValues  Json
+  behindPhotos Json
+  updatedAt    DateTime @updatedAt
+}
+
+model ContactInfo {
+  id             String   @id @default(cuid())
+  whatsapp       String
+  instagram      String
+  tiktok         String
+  shopee         String
+  tokopedia      String
+  email          String?
+  operatingHours Json
+  updatedAt      DateTime @updatedAt
+}
