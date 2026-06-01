@@ -3,7 +3,14 @@ import { getProducts } from "@/actions/products";
 import { getLookbookPhotos } from "@/actions/lookbooks";
 import { getTestimonials } from "@/actions/testimonials";
 import { getBanners } from "@/actions/banners";
-import { ShoppingBag, Camera, Star, Image as ImageIcon, Plus, ArrowRight } from "lucide-react";
+import {
+  ShoppingBag,
+  Camera,
+  Star,
+  Image as ImageIcon,
+  Plus,
+  ArrowRight,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function DashboardPage() {
@@ -46,12 +53,11 @@ export default async function DashboardPage() {
       <AdminTopBar title="Dashboard" />
 
       <div className="p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-8">
-        
         {/* Page Header */}
         <div>
-          <h2 className="text-2xl font-sans font-bold text-[var(--color-text)] tracking-tight">
+          <label className="text-xl font-sans font-medium text-[var(--color-text)]">
             Overview
-          </h2>
+          </label>
           <p className="text-[var(--color-text-muted)] text-sm mt-1">
             Here is what is happening with your store today.
           </p>
@@ -62,7 +68,10 @@ export default async function DashboardPage() {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.label} className="shadow-sm border-[var(--color-border)]">
+              <Card
+                key={stat.label}
+                className="shadow-sm border-[var(--color-border)] transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+              >
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-sans font-medium text-[var(--color-text-muted)]">
                     {stat.label}
@@ -83,7 +92,6 @@ export default async function DashboardPage() {
 
         {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-          
           {/* Recent Products (Spans 2 columns on large screens) */}
           <Card className="lg:col-span-2 shadow-sm border-[var(--color-border)] flex flex-col">
             <CardHeader className="border-b border-[var(--color-border)] pb-4">
@@ -124,7 +132,6 @@ export default async function DashboardPage() {
               </a>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>
@@ -145,47 +152,63 @@ async function RecentProducts() {
   }
 
   return (
-    <div className="flex flex-col divide-y divide-[var(--color-border)]">
-      {products.map((product) => (
-        <div
-          key={product.id}
-          className="flex items-center justify-between py-3.5 group"
-        >
-          <div className="flex flex-col gap-1">
-            <p className="text-sm font-sans font-semibold text-[var(--color-text)]">
-              {product.name}
-            </p>
-            <p className="text-sm font-sans text-[var(--color-text-muted)] flex items-center gap-2">
-              <span>{product.category}</span>
-              <span>&middot;</span>
-              <span className="font-medium text-[var(--color-text)]">
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
+            <th className="pb-2 font-medium">Product</th>
+            <th className="pb-2 font-medium hidden sm:table-cell">Category</th>
+            <th className="pb-2 font-medium hidden sm:table-cell">Price</th>
+            <th className="pb-2 font-medium">Status</th>
+            <th className="pb-2 font-medium text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product, idx) => (
+            <tr
+              key={product.id}
+              className={`border-b border-[var(--color-border)] last:border-0 ${
+                idx % 2 === 0
+                  ? "bg-[var(--color-bg)]"
+                  : "bg-[var(--color-surface)]"
+              }`}
+            >
+              <td className="py-3 pr-4 font-medium text-[var(--color-text)]">
+                {product.name}
+              </td>
+              <td className="py-3 pr-4 text-[var(--color-text-muted)] hidden sm:table-cell">
+                {product.category}
+              </td>
+              <td className="py-3 pr-4 text-[var(--color-text)] hidden sm:table-cell">
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
                   currency: "IDR",
                   minimumFractionDigits: 0,
                 }).format(product.price)}
-              </span>
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span
-              className={`text-xs font-sans px-2.5 py-1 rounded-full font-medium ${
-                product.isActive
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                  : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-              }`}
-            >
-              {product.isActive ? "Active" : "Inactive"}
-            </span>
-            <a
-              href={`/admin/products/${product.id}`}
-              className="text-sm font-sans font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors flex items-center gap-1 opacity-0 group-hover:opacity-100 md:opacity-100 focus:opacity-100"
-            >
-              Edit <ArrowRight size={14} />
-            </a>
-          </div>
-        </div>
-      ))}
+              </td>
+              <td className="py-3 pr-4">
+                <span
+                  className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                    product.isActive
+                      ? "bg-[var(--color-accent)]/10 text-[var(--color-accent)] border-[var(--color-accent)]/20"
+                      : "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"
+                  }`}
+                >
+                  {product.isActive ? "Active" : "Inactive"}
+                </span>
+              </td>
+              <td className="py-3 text-right">
+                <a
+                  href={`/admin/products/${product.id}`}
+                  className="inline-flex items-center gap-1 text-sm font-sans font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                >
+                  Edit <ArrowRight size={14} />
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

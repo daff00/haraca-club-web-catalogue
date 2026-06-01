@@ -16,7 +16,7 @@ export async function AdminTopBar({ title }: AdminTopBarProps) {
 
   return (
     <header className="h-16 bg-[var(--color-bg)] border-b border-[var(--color-border)] flex items-center justify-between px-6 sticky top-0 z-40">
-      <h1 className="text-lg font-sans font-medium text-[var(--color-text)]">
+      <h1 className="text-xl font-semibold text-[var(--color-text)]"  style={{ fontFamily: 'var(--font-inter)' }}>
         {title}
       </h1>
       <div className="flex items-center gap-3">

@@ -37,9 +37,14 @@ export default async function ProductsPage({ searchParams }: Props) {
       <div className="p-6 flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-[var(--color-text-muted)] font-sans">
-            {total} products total
-          </p>
+          <div>
+            <label className="text-xl font-sans font-medium text-[var(--color-text)]">
+              Material
+            </label>
+            <p className="text-sm text-[var(--color-text-muted)] font-sans">
+              {total} products total
+            </p>
+          </div>
           <Link
             href="/admin/products/new"
             className="bg-[var(--color-text)] text-[var(--color-bg)] px-4 py-2 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-brown-dark)] transition-colors"

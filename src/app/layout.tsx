@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Sans, Cormorant_Garamond, Geist } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond, Geist, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({subsets:['latin'],variable:'--font-inter'});
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
