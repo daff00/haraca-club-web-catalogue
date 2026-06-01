@@ -5,17 +5,23 @@ import { ProductsFilterBar } from "@/components/admin/ProductsFilterBar";
 import Link from "next/link";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     category?: string;
-  };
+  }>;
 }
 
 export default async function ProductsPage({ searchParams }: Props) {
-  const page = Number(searchParams.page ?? 1);
-  const search = searchParams.search ?? "";
-  const category = searchParams.category ?? "";
+  const {
+    page: pageParam,
+    search: searchParam,
+    category: categoryParam,
+  } = await searchParams;
+
+  const page = Number(pageParam ?? 1);
+  const search = searchParam ?? "";
+  const category = categoryParam ?? "";
 
   const { products, total, totalPages } = await getProducts({
     page,
@@ -29,7 +35,6 @@ export default async function ProductsPage({ searchParams }: Props) {
       <AdminTopBar title="Products" />
 
       <div className="p-6 flex flex-col gap-4">
-
         {/* Header */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-[var(--color-text-muted)] font-sans">
@@ -50,10 +55,7 @@ export default async function ProductsPage({ searchParams }: Props) {
         <ProductsTable products={products} />
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination page={page} totalPages={totalPages} />
-        )}
-
+        {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
       </div>
     </div>
   );

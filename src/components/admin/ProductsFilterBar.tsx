@@ -14,24 +14,29 @@ export function ProductsFilterBar({ search, category }: Props) {
   const searchParams = useSearchParams();
 
   const updateParams = useCallback(
-    (updates: Record<string, string>) => {
-      const params = new URLSearchParams(searchParams.toString());
+  (updates: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value) {
-          params.set(key, value);
-        } else {
-          params.delete(key);
-        }
-      });
+    console.log("before:", params.toString());
+    console.log("updates:", updates);
 
-      // Reset ke page 1 setiap kali filter berubah
-      params.delete("page");
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
 
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    [pathname, router, searchParams]
-  );
+    params.delete("page");
+
+    console.log("after:", params.toString());
+    console.log("pushing to:", `${pathname}?${params.toString()}`);
+
+    router.push(`${pathname}?${params.toString()}`);
+  },
+  [pathname, router, searchParams]
+);
 
   return (
     <div className="flex gap-3 items-center">
