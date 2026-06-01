@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminContentWrapper } from "@/components/admin/AdminContentWrapper";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function AdminLayout({
@@ -14,9 +15,9 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-[var(--admin-content-bg)]">
       <AdminSidebar />
-      <div className="ml-60">
+      <AdminContentWrapper>
         {children}
-      </div>
+      </AdminContentWrapper>
       <Toaster position="bottom-right" />
     </div>
   );

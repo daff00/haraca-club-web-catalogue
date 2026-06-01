@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
+  const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     });
 
   if (error) {
+    console.error("Supabase upload error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
