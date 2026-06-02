@@ -33,15 +33,15 @@ export function AdminSidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[var(--admin-sidebar)] flex flex-col z-50 transition-all duration-300 ${
-        isOpen ? "w-60" : "w-16"
+      className={`fixed left-0 top-0 h-screen bg-[var(--admin-sidebar)] flex flex-col z-50 transition-all duration-300 ease-in-out shadow-xl ${
+        isOpen ? "w-64" : "w-16"
       }`}
     >
       {/* Logo + Toggle */}
-      <div className="h-16 px-3 py-5 border-b border-white/10 flex items-center justify-between">
+      <div className="h-16 px-3 py-4 border-b border-[var(--admin-sidebar-text)]/10 flex items-center justify-between">
         {isOpen && (
-          <div>
-            <p className="font-display text-2xl font-medium text-[var(--admin-sidebar-text)]">
+          <div className="overflow-hidden">
+            <p className="font-display text-2xl font-medium text-[var(--admin-sidebar-text)] tracking-tight">
               Haraca
             </p>
             <p className="text-xs text-[var(--color-accent)] mt-0.5">
@@ -51,15 +51,16 @@ export function AdminSidebar() {
         )}
         <button
           onClick={toggle}
-          className="text-white/60 hover:text-white transition-colors p-1 rounded ml-auto"
+          className="text-[var(--admin-sidebar-text)]/60 hover:text-[var(--admin-sidebar-text)] transition-colors p-1 rounded-md hover:bg-white/5"
+          aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           {isOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
         </button>
       </div>
 
-      {/* Nav */}
+      {/* Navigation */}
       <nav className="flex-1 px-2 py-4 overflow-y-auto">
-        <ul className="flex flex-col gap-0.5">
+        <ul className="flex flex-col gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -73,17 +74,18 @@ export function AdminSidebar() {
                   href={item.href}
                   title={!isOpen ? item.label : undefined}
                   className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-card text-sm font-sans transition-colors
+                    flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-card)] text-sm font-sans
+                    transition-all duration-200 group
                     ${!isOpen && "justify-center"}
                     ${
                       isActive
                         ? "bg-white/10 text-[var(--admin-sidebar-text)] border-l-2 border-[var(--color-accent)]"
-                        : "text-white/60 hover:bg-white/5 hover:text-white/90"
+                        : "text-[var(--admin-sidebar-text)]/60 hover:bg-white/5 hover:text-[var(--admin-sidebar-text)]"
                     }
                   `}
                 >
-                  <Icon size={16} className="flex-shrink-0" />
-                  {isOpen && item.label}
+                  <Icon size={18} className="flex-shrink-0" />
+                  {isOpen && <span className="truncate">{item.label}</span>}
                 </Link>
               </li>
             );
@@ -91,16 +93,19 @@ export function AdminSidebar() {
         </ul>
       </nav>
 
-      {/* Logout */}
-      <div className="px-2 py-4 border-t border-white/10">
+      {/* Logout Button */}
+      <div className="px-2 py-4 border-t border-[var(--admin-sidebar-text)]/10">
         <button
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
           title={!isOpen ? "Sign Out" : undefined}
-          className={`flex items-center gap-3 px-3 py-2.5 w-full rounded-card text-sm font-sans text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors ${
-            !isOpen && "justify-center"
-          }`}
+          className={`
+            flex items-center gap-3 px-3 py-2.5 w-full rounded-[var(--radius-card)] text-sm font-sans
+            text-[var(--admin-sidebar-text)]/60 hover:bg-white/5 hover:text-[var(--admin-sidebar-text)] transition-colors
+            focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]
+            ${!isOpen && "justify-center"}
+          `}
         >
-          <LogOut size={16} className="flex-shrink-0" />
+          <LogOut size={18} className="flex-shrink-0" />
           {isOpen && "Sign Out"}
         </button>
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { Search, X } from "lucide-react";
 
 interface Props {
   search: string;
@@ -12,51 +13,62 @@ export function ProductsFilterBar({ search, category }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [inputValue, setInputValue] = useState(search);
+
+  useEffect(() => {
+    setInputValue(search);
+  }, [search]);
 
   const updateParams = useCallback(
-  (updates: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams.toString());
+    (updates: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+        else params.delete(key);
+      });
+      params.delete("page");
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
 
-    console.log("before:", params.toString());
-    console.log("updates:", updates);
-
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
+  // Debounced search
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (inputValue !== search) {
+        updateParams({ search: inputValue });
       }
-    });
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [inputValue, search, updateParams]);
 
-    params.delete("page");
+  const clearFilters = () => {
+    setInputValue("");
+    updateParams({ search: "", category: "" });
+  };
 
-    console.log("after:", params.toString());
-    console.log("pushing to:", `${pathname}?${params.toString()}`);
-
-    router.push(`${pathname}?${params.toString()}`);
-  },
-  [pathname, router, searchParams]
-);
+  const hasFilters = search || category;
 
   return (
-    <div className="flex gap-3 items-center">
-      <input
-        defaultValue={search}
-        placeholder="Search products..."
-        className="border border-[var(--color-border)] rounded-input px-3 py-2 text-sm font-sans bg-[var(--color-bg)] focus:outline-none focus:border-[var(--color-text)] w-64"
-        onChange={(e) => {
-          // Debounce ringan — tunggu user berhenti ngetik 500ms
-          const val = e.target.value;
-          const timeout = setTimeout(() => {
-            updateParams({ search: val });
-          }, 500);
-          return () => clearTimeout(timeout);
-        }}
-      />
+    <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="relative flex-1 max-w-sm">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+        />
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Search products by name or slug..."
+          className="w-full pl-9 pr-3 py-2 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] transition-shadow"
+        />
+      </div>
+
       <select
-        defaultValue={category}
-        className="border border-[var(--color-border)] rounded-input px-3 py-2 text-sm font-sans bg-[var(--color-bg)] focus:outline-none focus:border-[var(--color-text)]"
+        value={category}
         onChange={(e) => updateParams({ category: e.target.value })}
+        className="px-3 py-2 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
       >
         <option value="">All Categories</option>
         <option value="TANKTOP">Tanktop</option>
@@ -65,13 +77,13 @@ export function ProductsFilterBar({ search, category }: Props) {
         <option value="SABLON">Sablon</option>
       </select>
 
-      {(search || category) && (
-        <a
-          href="/admin/products"
-          className="px-4 py-2 rounded-btn text-sm font-sans text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] transition-colors"
+      {hasFilters && (
+        <button
+          onClick={clearFilters}
+          className="inline-flex items-center gap-1 px-3 py-2 rounded-[var(--radius-btn)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors"
         >
-          Clear
-        </a>
+          <X size={14} /> Clear filters
+        </button>
       )}
     </div>
   );

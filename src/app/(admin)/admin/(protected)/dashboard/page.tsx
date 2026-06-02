@@ -55,9 +55,9 @@ export default async function DashboardPage() {
       <div className="p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-8">
         {/* Page Header */}
         <div>
-          <label className="text-xl font-sans font-medium text-[var(--color-text)]">
+          <h1 className="text-2xl font-display font-medium text-[var(--color-text)]">
             Overview
-          </label>
+          </h1>
           <p className="text-[var(--color-text-muted)] text-sm mt-1">
             Here is what is happening with your store today.
           </p>
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
             return (
               <Card
                 key={stat.label}
-                className="shadow-sm border-[var(--color-border)] transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+                className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius-card)] shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
               >
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-sans font-medium text-[var(--color-text-muted)]">
@@ -92,8 +92,8 @@ export default async function DashboardPage() {
 
         {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-          {/* Recent Products (Spans 2 columns on large screens) */}
-          <Card className="lg:col-span-2 shadow-sm border-[var(--color-border)] flex flex-col">
+          {/* Recent Products */}
+          <Card className="lg:col-span-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius-card)] shadow-sm flex flex-col">
             <CardHeader className="border-b border-[var(--color-border)] pb-4">
               <CardTitle className="text-lg font-sans font-semibold text-[var(--color-text)]">
                 Recent Products
@@ -104,8 +104,8 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions (Sidebar style) */}
-          <Card className="shadow-sm border-[var(--color-border)] h-fit">
+          {/* Quick Actions */}
+          <Card className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius-card)] shadow-sm h-fit">
             <CardHeader className="border-b border-[var(--color-border)] pb-4">
               <CardTitle className="text-lg font-sans font-semibold text-[var(--color-text)]">
                 Quick Actions
@@ -114,19 +114,19 @@ export default async function DashboardPage() {
             <CardContent className="pt-6 flex flex-col gap-3">
               <a
                 href="/admin/products/new"
-                className="flex items-center justify-center gap-2 bg-[var(--color-text)] text-[var(--color-bg)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:opacity-90 transition-opacity w-full"
+                className="flex items-center justify-center gap-2 bg-[var(--color-text)] text-[var(--color-bg)] px-4 py-2.5 rounded-[var(--radius-btn)] text-sm font-sans font-medium hover:opacity-90 transition-opacity w-full"
               >
                 <Plus size={16} /> Add Product
               </a>
               <a
                 href="/admin/lookbook"
-                className="flex items-center justify-center gap-2 border border-[var(--color-text)] text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
+                className="flex items-center justify-center gap-2 border border-[var(--color-text)] text-[var(--color-text)] px-4 py-2.5 rounded-[var(--radius-btn)] text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
               >
                 <Camera size={16} /> Add Lookbook Photo
               </a>
               <a
                 href="/admin/banners"
-                className="flex items-center justify-center gap-2 border border-black text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
+                className="flex items-center justify-center gap-2 border border-[var(--color-text)] text-[var(--color-text)] px-4 py-2.5 rounded-[var(--radius-btn)] text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
               >
                 <ImageIcon size={16} /> Update Banner
               </a>
@@ -174,40 +174,43 @@ async function RecentProducts() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product, idx) => (
+          {products.map((product) => (
             <tr
               key={product.id}
               className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/40 transition-colors group"
             >
               <td className="py-3 px-5 font-medium text-[var(--color-text)]">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-xs font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-xs font-bold text-[var(--color-text)]">
                     {product.name.charAt(0)}
                   </div>
                   <span className="truncate max-w-[180px]">{product.name}</span>
                 </div>
-              </td>
+               </td>
               <td className="py-3 px-5 text-[var(--color-text-muted)] hidden sm:table-cell">
-                <span className="px-2 py-1 rounded-md bg-[var(--color-surface)] text-xs font-mono">
+                <span className="px-2 py-1 rounded-md bg-[var(--color-surface)] text-xs font-mono text-[var(--color-text)]">
                   {product.category}
                 </span>
-              </td>
+               </td>
               <td className="py-3 px-5 text-[var(--color-text)] font-medium hidden sm:table-cell">
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
                   currency: "IDR",
                   minimumFractionDigits: 0,
                 }).format(product.price)}
-              </td>
+               </td>
               <td className="py-3 px-5">
-                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium shadow-sm ${product.isActive
-                    ? "bg-green-50 text-green-700 border border-green-200"
-                    : "bg-gray-50 text-gray-600 border border-gray-200"
-                  }`}>
-                  <span className={`w-2 h-2 rounded-full ${product.isActive ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
+                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium shadow-sm ${
+                  product.isActive
+                    ? "bg-green-100 text-green-800 border border-green-200"
+                    : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)]"
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${
+                    product.isActive ? "bg-green-500 animate-pulse" : "bg-[var(--color-text-muted)]"
+                  }`} />
                   {product.isActive ? "Active" : "Inactive"}
                 </span>
-              </td>
+               </td>
               <td className="py-3 px-5 text-right">
                 <a
                   href={`/admin/products/${product.id}`}
@@ -215,11 +218,11 @@ async function RecentProducts() {
                 >
                   Edit <ArrowRight size={14} />
                 </a>
-              </td>
-            </tr>
+               </td>
+             </tr>
           ))}
         </tbody>
-      </table>
+       </table>
     </div>
   );
 }

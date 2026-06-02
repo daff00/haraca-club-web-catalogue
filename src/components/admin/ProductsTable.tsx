@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { toggleProductActive, deleteProduct } from "@/actions/products";
 import type { Product } from "@/types";
 import Link from "next/link";
+import { Edit, Trash2, ExternalLink } from "lucide-react";
 
 interface Props {
   products: Product[];
@@ -13,52 +14,54 @@ interface Props {
 export function ProductsTable({ products }: Props) {
   if (products.length === 0) {
     return (
-      <div className="border border-[var(--color-border)] rounded-card p-12 text-center">
-        <p className="text-sm text-[var(--color-text-muted)] font-sans">
-          No products found.
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+        <div className="w-16 h-16 rounded-full bg-[var(--color-surface)] flex items-center justify-center mb-4">
+          <PackageIcon size={32} className="text-[var(--color-text-muted)]" />
+        </div>
+        <h3 className="text-lg font-display text-[var(--color-text)] mb-1">
+          No products yet
+        </h3>
+        <p className="text-sm text-[var(--color-text-muted)] max-w-sm">
+          Get started by adding your first product to the catalog.
         </p>
         <Link
           href="/admin/products/new"
-          className="mt-3 inline-block text-sm font-sans text-[var(--color-accent)] hover:underline"
+          className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-accent)] hover:underline"
         >
-          Add your first product →
+          Add product →
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="border border-[var(--color-border)] rounded-card overflow-hidden">
+    <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="bg-[var(--color-surface)] border-b border-[var(--color-border)]">
-            <th className="text-left px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+          <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface)]/40">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Product
             </th>
-            <th className="text-left px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Category
             </th>
-            <th className="text-left px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Price
             </th>
-            <th className="text-left px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Labels
             </th>
-            <th className="text-left px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Status
             </th>
-            <th className="text-right px-4 py-3 text-xs font-sans font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+            <th className="px-4 py-3 text-right text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product, i) => (
-            <ProductRow
-              key={product.id}
-              product={product}
-              isEven={i % 2 === 0}
-            />
+          {products.map((product, idx) => (
+            <ProductRow key={product.id} product={product} idx={idx} />
           ))}
         </tbody>
       </table>
@@ -66,13 +69,7 @@ export function ProductsTable({ products }: Props) {
   );
 }
 
-function ProductRow({
-  product,
-  isEven,
-}: {
-  product: Product;
-  isEven: boolean;
-}) {
+function ProductRow({ product, idx }: { product: Product; idx: number }) {
   const [isActive, setIsActive] = useState(product.isActive);
   const [deleting, setDeleting] = useState(false);
 
@@ -82,6 +79,9 @@ function ProductRow({
     const res = await toggleProductActive(product.id, next);
     if (res.success) {
       toast.success(`Product ${next ? "activated" : "deactivated"}`);
+    } else {
+      setIsActive(!next);
+      toast.error("Failed to update status");
     }
   }
 
@@ -91,51 +91,65 @@ function ProductRow({
     const res = await deleteProduct(product.id);
     if (res.success) {
       toast.success("Product deleted");
+      // Optionally refresh the page or remove row
+      window.location.reload();
     } else {
       toast.error("Failed to delete product");
       setDeleting(false);
     }
   }
 
+  const categoryLabels: Record<string, string> = {
+    TANKTOP: "Tanktop",
+    OVERSIZE: "Oversize",
+    REGULAR: "Regular",
+    SABLON: "Sablon",
+  };
+
   return (
     <tr
-      className={`border-b border-[var(--color-border)] last:border-0 ${
-        isEven ? "bg-white" : "bg-[var(--color-surface-alt)]"
+      className={`border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/30 transition-colors ${
+        idx % 2 === 0 ? "bg-white" : "bg-[var(--color-surface-alt)]/20"
       }`}
     >
-      {/* Product */}
+      {/* Product info */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          {product.photos[0] ? (
-            <img
-              src={product.photos[0]}
-              alt={product.name}
-              className="w-10 h-10 rounded-card object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-card bg-[var(--color-border)] flex-shrink-0" />
-          )}
+          <div className="w-10 h-10 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] flex-shrink-0">
+            {product.photos[0] ? (
+              <img
+                src={product.photos[0]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
+                <PackageIcon size={16} />
+              </div>
+            )}
+          </div>
           <div>
-            <p className="text-sm font-sans font-medium text-[var(--color-text)]">
+            <Link
+              href={`/admin/products/${product.id}`}
+              className="text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
+            >
               {product.name}
-            </p>
-            <p className="text-xs font-sans text-[var(--color-text-muted)]">
-              /{product.slug}
-            </p>
+            </Link>
+            <p className="text-xs text-[var(--color-text-muted)]">/{product.slug}</p>
           </div>
         </div>
       </td>
 
       {/* Category */}
       <td className="px-4 py-3">
-        <span className="text-xs font-sans text-[var(--color-text-muted)] bg-[var(--color-surface)] px-2 py-1 rounded-badge">
-          {product.category}
+        <span className="inline-flex items-center px-2 py-1 rounded-[var(--radius-badge)] text-xs font-medium bg-[var(--color-surface)] text-[var(--color-text)]">
+          {categoryLabels[product.category] || product.category}
         </span>
       </td>
 
       {/* Price */}
       <td className="px-4 py-3">
-        <span className="text-sm font-sans text-[var(--color-text)]">
+        <span className="text-sm font-medium text-[var(--color-text)]">
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -146,26 +160,27 @@ function ProductRow({
 
       {/* Labels */}
       <td className="px-4 py-3">
-        <div className="flex gap-1 flex-wrap">
-          {product.labels.length === 0 && (
+        <div className="flex flex-wrap gap-1">
+          {product.labels.length === 0 ? (
             <span className="text-xs text-[var(--color-text-muted)]">—</span>
+          ) : (
+            product.labels.map((label) => (
+              <span
+                key={label}
+                className={`px-2 py-0.5 rounded-[var(--radius-badge)] text-xs font-medium ${
+                  label === "BEST_SELLER"
+                    ? "bg-[var(--color-brown)] text-white"
+                    : "bg-[var(--color-accent)] text-white"
+                }`}
+              >
+                {label === "BEST_SELLER" ? "Best Seller" : "New Arrival"}
+              </span>
+            ))
           )}
-          {product.labels.map((label) => (
-            <span
-              key={label}
-              className={`text-xs font-sans px-2 py-0.5 rounded-badge ${
-                label === "BEST_SELLER"
-                  ? "bg-[var(--color-brown)] text-[var(--color-bg)]"
-                  : "bg-[var(--color-accent)] text-[var(--color-bg)]"
-              }`}
-            >
-              {label === "BEST_SELLER" ? "Best Seller" : "New Arrival"}
-            </span>
-          ))}
         </div>
       </td>
 
-      {/* Status */}
+      {/* Status toggle */}
       <td className="px-4 py-3">
         <button
           onClick={handleToggle}
@@ -183,23 +198,58 @@ function ProductRow({
 
       {/* Actions */}
       <td className="px-4 py-3 text-right">
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-3">
           <Link
             href={`/admin/products/${product.id}`}
-            className="text-xs font-sans text-[var(--color-accent)] hover:underline"
+            className="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+            title="Edit product"
           >
-            Edit
+            <Edit size={16} />
           </Link>
-          <span className="text-[var(--color-border)]">·</span>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="text-xs font-sans text-red-500 hover:underline disabled:opacity-50"
+            className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors disabled:opacity-50"
+            title="Delete product"
           >
-            {deleting ? "Deleting..." : "Delete"}
+            <Trash2 size={16} />
           </button>
+          {product.linkShopee || product.linkTiktok ? (
+            <a
+              href={product.linkShopee || product.linkTiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+              title="External link"
+            >
+              <ExternalLink size={14} />
+            </a>
+          ) : null}
         </div>
       </td>
     </tr>
+  );
+}
+
+// Helper icon component
+function PackageIcon({ size, className }: { size: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M20 7L12 3 4 7 12 11 20 7Z" />
+      <path d="M12 11V21" />
+      <path d="M20 12V7" />
+      <path d="M4 12V7" />
+      <path d="M20 16.5L12 21 4 16.5" />
+    </svg>
   );
 }
