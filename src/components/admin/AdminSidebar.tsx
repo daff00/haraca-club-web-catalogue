@@ -38,7 +38,7 @@ export function AdminSidebar() {
       }`}
     >
       {/* Logo + Toggle */}
-      <div className="px-3 py-5 border-b border-white/10 flex items-center justify-between">
+      <div className="h-16 px-3 py-5 border-b border-white/10 flex items-center justify-between">
         {isOpen && (
           <div>
             <p className="font-display text-2xl font-medium text-[var(--admin-sidebar-text)]">

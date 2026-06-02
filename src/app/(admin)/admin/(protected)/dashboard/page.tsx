@@ -120,13 +120,13 @@ export default async function DashboardPage() {
               </a>
               <a
                 href="/admin/lookbook"
-                className="flex items-center justify-center gap-2 border border-[var(--color-border)] text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
+                className="flex items-center justify-center gap-2 border border-[var(--color-text)] text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
               >
                 <Camera size={16} /> Add Lookbook Photo
               </a>
               <a
                 href="/admin/banners"
-                className="flex items-center justify-center gap-2 border border-[var(--color-border)] text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
+                className="flex items-center justify-center gap-2 border border-black text-[var(--color-text)] px-4 py-2.5 rounded-btn text-sm font-sans font-medium hover:bg-[var(--color-surface)] transition-colors w-full"
               >
                 <ImageIcon size={16} /> Update Banner
               </a>
@@ -155,52 +155,63 @@ async function RecentProducts() {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
-            <th className="pb-2 font-medium">Product</th>
-            <th className="pb-2 font-medium hidden sm:table-cell">Category</th>
-            <th className="pb-2 font-medium hidden sm:table-cell">Price</th>
-            <th className="pb-2 font-medium">Status</th>
-            <th className="pb-2 font-medium text-right">Action</th>
+          <tr className="text-left text-[var(--color-text-muted)] border-b border-[var(--color-border)] bg-[var(--color-surface)]/30">
+            <th className="pb-3 pt-4 px-5 font-semibold text-xs uppercase tracking-wider">
+              Product
+            </th>
+            <th className="pb-3 pt-4 px-5 font-semibold text-xs uppercase tracking-wider hidden sm:table-cell">
+              Category
+            </th>
+            <th className="pb-3 pt-4 px-5 font-semibold text-xs uppercase tracking-wider hidden sm:table-cell">
+              Price
+            </th>
+            <th className="pb-3 pt-4 px-5 font-semibold text-xs uppercase tracking-wider">
+              Status
+            </th>
+            <th className="pb-3 pt-4 px-5 font-semibold text-xs uppercase tracking-wider text-right">
+              Action
+            </th>
           </tr>
         </thead>
         <tbody>
           {products.map((product, idx) => (
             <tr
               key={product.id}
-              className={`border-b border-[var(--color-border)] last:border-0 ${
-                idx % 2 === 0
-                  ? "bg-[var(--color-bg)]"
-                  : "bg-[var(--color-surface)]"
-              }`}
+              className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/40 transition-colors group"
             >
-              <td className="py-3 pr-4 font-medium text-[var(--color-text)]">
-                {product.name}
+              <td className="py-3 px-5 font-medium text-[var(--color-text)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-xs font-bold">
+                    {product.name.charAt(0)}
+                  </div>
+                  <span className="truncate max-w-[180px]">{product.name}</span>
+                </div>
               </td>
-              <td className="py-3 pr-4 text-[var(--color-text-muted)] hidden sm:table-cell">
-                {product.category}
+              <td className="py-3 px-5 text-[var(--color-text-muted)] hidden sm:table-cell">
+                <span className="px-2 py-1 rounded-md bg-[var(--color-surface)] text-xs font-mono">
+                  {product.category}
+                </span>
               </td>
-              <td className="py-3 pr-4 text-[var(--color-text)] hidden sm:table-cell">
+              <td className="py-3 px-5 text-[var(--color-text)] font-medium hidden sm:table-cell">
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
                   currency: "IDR",
                   minimumFractionDigits: 0,
                 }).format(product.price)}
               </td>
-              <td className="py-3 pr-4">
-                <span
-                  className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
-                    product.isActive
-                      ? "bg-[var(--color-accent)]/10 text-[var(--color-accent)] border-[var(--color-accent)]/20"
-                      : "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"
-                  }`}
-                >
+              <td className="py-3 px-5">
+                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium shadow-sm ${product.isActive
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-gray-50 text-gray-600 border border-gray-200"
+                  }`}>
+                  <span className={`w-2 h-2 rounded-full ${product.isActive ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
                   {product.isActive ? "Active" : "Inactive"}
                 </span>
               </td>
-              <td className="py-3 text-right">
+              <td className="py-3 px-5 text-right">
                 <a
                   href={`/admin/products/${product.id}`}
-                  className="inline-flex items-center gap-1 text-sm font-sans font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors group-hover:translate-x-0.5 duration-200"
                 >
                   Edit <ArrowRight size={14} />
                 </a>
