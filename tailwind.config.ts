@@ -23,7 +23,7 @@ const config: Config = {
         dark:         "var(--color-dark)",
       },
       fontFamily: {
-        sans:    ["DM Sans", "sans-serif"],
+        sans:    ["DM Sans", "sans-serif", "Inter", "Geist"],
         display: ["Cormorant Garamond", "serif"],
       },
       borderRadius: {

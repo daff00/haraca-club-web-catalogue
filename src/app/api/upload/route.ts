@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
+  const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -13,6 +13,16 @@ export async function POST(request: NextRequest) {
 
   if (!file) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  }
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+  // After getting the file
+  if (file.size > MAX_FILE_SIZE) {
+    return NextResponse.json(
+      { error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit` },
+      { status: 400 }
+    );
   }
 
   const bytes = await file.arrayBuffer();
@@ -30,6 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
   if (error) {
+    console.error("Supabase upload error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
