@@ -32,7 +32,11 @@ const mockPhotos = [
     photoUrl: "https://example.com/photo1.jpg",
     category: "DAILY_CASUAL" as const,
     productId: "prod-1",
-    product: { id: "prod-1", name: "Haraca Oversize Tee", slug: "oversize-tee" },
+    product: {
+      id: "prod-1",
+      name: "Haraca Oversize Tee",
+      slug: "oversize-tee",
+    },
     modelSize: "L",
     modelStats: "TB 170cm / BB 62kg",
     order: 0,
@@ -54,12 +58,12 @@ describe("LookbookGrid", () => {
 
   it("renders empty state when no photos", () => {
     render(<LookbookGrid photos={[]} />);
-    expect(screen.getByText("No lookbook photos yet.")).toBeInTheDocument();
+    expect(screen.getByText("No lookbook photos yet")).toBeInTheDocument();
   });
 
   it("renders add photo link in empty state", () => {
     render(<LookbookGrid photos={[]} />);
-    expect(screen.getByText("Add your first photo →")).toBeInTheDocument();
+    expect(screen.getByText("Add first photo →")).toBeInTheDocument();
   });
 
   it("renders photo grid", () => {
