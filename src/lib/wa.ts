@@ -5,6 +5,7 @@
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 
 export function buildWaUrl(message: string): string {
+  const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
   const encoded = encodeURIComponent(message.trim());
   return `https://wa.me/${WA_NUMBER}?text=${encoded}`;
 }

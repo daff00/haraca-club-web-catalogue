@@ -1,12 +1,12 @@
+// Harus di paling atas, sebelum import apapun
+process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "628123456789";
+
 import {
   buildWaUrl,
   buildProductMessage,
   buildContactFormMessage,
   buildCustomSablonMessage,
 } from "@/lib/wa";
-
-// Mock env variable
-process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "628123456789";
 
 describe("buildWaUrl", () => {
   it("builds a valid WhatsApp URL", () => {
@@ -29,7 +29,6 @@ describe("buildProductMessage", () => {
       color: "Black",
       quantity: 2,
     });
-
     expect(message).toContain("Haraca Oversize Tee");
     expect(message).toContain("L");
     expect(message).toContain("Black");
@@ -45,7 +44,6 @@ describe("buildContactFormMessage", () => {
       topic: "Tanya produk",
       message: "Apakah ada stok ukuran XL?",
     });
-
     expect(message).toContain("Budi");
     expect(message).toContain("08123456789");
     expect(message).toContain("Tanya produk");

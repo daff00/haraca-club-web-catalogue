@@ -3,7 +3,7 @@ import type { Config } from "jest";
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  setupFilesAfterFramework: ["<rootDir>/jest.setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
@@ -17,7 +17,10 @@ const config: Config = {
       },
     ],
   },
-  testPathPattern: ["**/__tests__/**/*.test.tsx?"],
+  testMatch: [
+    "<rootDir>/src/**/__tests__/**/*.test.ts?(x)",
+    "<rootDir>/src/**/*.test.ts?(x)",
+  ],
   collectCoverageFrom: [
     "src/actions/**/*.ts",
     "src/components/admin/**/*.tsx",
