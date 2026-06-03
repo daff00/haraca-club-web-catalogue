@@ -278,32 +278,32 @@ export function ProductForm({ product }: Props) {
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                <label htmlFor="product-name" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                   Product Name <Required />
                 </label>
                 <input
+                  id="product-name"
                   type="text"
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="e.g. Essential Cotton Tanktop"
-                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${
-                    errors.name ? "border-red-500" : ""
-                  }`}
+                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${errors.name ? "border-red-500" : ""
+                    }`}
                 />
                 {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                <label htmlFor="slug" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                   Slug <Required />
                 </label>
                 <input
+                  id="slug"
                   type="text"
                   value={slug}
                   readOnly
-                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-3 py-2 text-sm text-[var(--color-text-muted)] ${
-                    errors.slug ? "border-red-500" : ""
-                  }`}
+                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-3 py-2 text-sm text-[var(--color-text-muted)] ${errors.slug ? "border-red-500" : ""
+                    }`}
                 />
                 {errors.slug && <p className="text-xs text-red-500 mt-1">{errors.slug}</p>}
                 <p className="text-xs text-[var(--color-text-muted)] mt-1">
@@ -313,7 +313,7 @@ export function ProductForm({ product }: Props) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                  <label htmlFor="price" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                     Price (Rp) <Required />
                   </label>
                   <div className="relative">
@@ -321,6 +321,7 @@ export function ProductForm({ product }: Props) {
                       Rp
                     </span>
                     <input
+                      id="price"
                       type="number"
                       value={price}
                       onChange={(e) => {
@@ -328,19 +329,19 @@ export function ProductForm({ product }: Props) {
                         setErrors((prev) => ({ ...prev, price: "" }));
                       }}
                       placeholder="0"
-                      className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] pl-8 pr-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${
-                        errors.price ? "border-red-500" : ""
-                      }`}
+                      className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] pl-8 pr-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${errors.price ? "border-red-500" : ""
+                        }`}
                     />
                   </div>
                   {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                  <label htmlFor="category" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                     Category <Required />
                   </label>
                   <select
+                    id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
@@ -355,10 +356,11 @@ export function ProductForm({ product }: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                <label htmlFor="description" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                   Description <Required />
                 </label>
                 <textarea
+                  id="description"
                   value={description}
                   onChange={(e) => {
                     setDescription(e.target.value);
@@ -366,18 +368,18 @@ export function ProductForm({ product }: Props) {
                   }}
                   rows={4}
                   placeholder="Product description..."
-                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${
-                    errors.description ? "border-red-500" : ""
-                  }`}
+                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${errors.description ? "border-red-500" : ""
+                    }`}
                 />
                 {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                <label htmlFor="material" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
                   Material <Required />
                 </label>
                 <input
+                  id="material"
                   type="text"
                   value={material}
                   onChange={(e) => {
@@ -385,9 +387,8 @@ export function ProductForm({ product }: Props) {
                     setErrors((prev) => ({ ...prev, material: "" }));
                   }}
                   placeholder="e.g. 100% Cotton Combed 30s"
-                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${
-                    errors.material ? "border-red-500" : ""
-                  }`}
+                  className={`w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] ${errors.material ? "border-red-500" : ""
+                    }`}
                 />
                 {errors.material && <p className="text-xs text-red-500 mt-1">{errors.material}</p>}
               </div>
@@ -491,8 +492,9 @@ export function ProductForm({ product }: Props) {
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">Shopee Link</label>
+                <label htmlFor="shopee-link" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">Shopee Link</label>
                 <input
+                  id="shopee-link"
                   type="url"
                   value={linkShopee}
                   onChange={(e) => setLinkShopee(e.target.value)}
@@ -501,8 +503,9 @@ export function ProductForm({ product }: Props) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">TikTok Shop Link</label>
+                <label htmlFor="tiktok-shop-link" className="block text-xs font-medium text-[var(--color-text)] mb-1.5">TikTok Shop Link</label>
                 <input
+                  id="tiktok-shop-link"
                   type="url"
                   value={linkTiktok}
                   onChange={(e) => setLinkTiktok(e.target.value)}
@@ -526,14 +529,12 @@ export function ProductForm({ product }: Props) {
               <button
                 type="button"
                 onClick={() => setIsActive((prev) => !prev)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                  isActive ? "bg-green-500" : "bg-[var(--color-border)]"
-                }`}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? "bg-green-500" : "bg-[var(--color-border)]"
+                  }`}
               >
                 <span
-                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                    isActive ? "translate-x-4" : "translate-x-0.5"
-                  }`}
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isActive ? "translate-x-4" : "translate-x-0.5"
+                    }`}
                 />
               </button>
             </div>
@@ -554,14 +555,12 @@ export function ProductForm({ product }: Props) {
                   <button
                     type="button"
                     onClick={() => toggleLabel(item.value)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      labels.includes(item.value) ? "bg-[var(--color-text)]" : "bg-[var(--color-border)]"
-                    }`}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${labels.includes(item.value) ? "bg-[var(--color-text)]" : "bg-[var(--color-border)]"
+                      }`}
                   >
                     <span
-                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                        labels.includes(item.value) ? "translate-x-4" : "translate-x-0.5"
-                      }`}
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${labels.includes(item.value) ? "translate-x-4" : "translate-x-0.5"
+                        }`}
                     />
                   </button>
                 </div>
@@ -586,10 +585,9 @@ export function ProductForm({ product }: Props) {
                     onClick={() => toggleSize(size)}
                     className={`
                       px-3 py-1.5 rounded-[var(--radius-btn)] text-xs font-medium transition-all
-                      ${
-                        sizes.includes(size)
-                          ? "bg-[var(--color-text)] text-[var(--color-bg)] border border-[var(--color-text)]"
-                          : "bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-surface)]"
+                      ${sizes.includes(size)
+                        ? "bg-[var(--color-text)] text-[var(--color-bg)] border border-[var(--color-text)]"
+                        : "bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-surface)]"
                       }
                     `}
                   >
@@ -640,6 +638,7 @@ export function ProductForm({ product }: Props) {
 
               <div className="space-y-2 pt-2 border-t border-[var(--color-border)]">
                 <input
+                  id="color-name"
                   type="text"
                   value={colorName}
                   onChange={(e) => {
