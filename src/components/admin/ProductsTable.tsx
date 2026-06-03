@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { toggleProductActive, deleteProduct } from "@/actions/products";
 import type { Product } from "@/types";
 import Link from "next/link";
-import { Edit, Trash2, ExternalLink } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface Props {
   products: Product[];
@@ -69,9 +69,16 @@ export function ProductsTable({ products }: Props) {
   );
 }
 
-function ProductRow({ product, idx }: { product: Product; idx: number }) {
+function ProductRow({
+  product,
+  isEven,
+}: {
+  product: Product;
+  isEven: boolean;
+}) {
   const [isActive, setIsActive] = useState(product.isActive);
   const [deleting, setDeleting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function handleToggle() {
     const next = !isActive;
@@ -79,24 +86,19 @@ function ProductRow({ product, idx }: { product: Product; idx: number }) {
     const res = await toggleProductActive(product.id, next);
     if (res.success) {
       toast.success(`Product ${next ? "activated" : "deactivated"}`);
-    } else {
-      setIsActive(!next);
-      toast.error("Failed to update status");
     }
   }
 
   async function handleDelete() {
-    if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
     setDeleting(true);
     const res = await deleteProduct(product.id);
     if (res.success) {
       toast.success("Product deleted");
-      // Optionally refresh the page or remove row
-      window.location.reload();
     } else {
       toast.error("Failed to delete product");
       setDeleting(false);
     }
+    setShowConfirm(false);
   }
 
   const categoryLabels: Record<string, string> = {
@@ -107,127 +109,122 @@ function ProductRow({ product, idx }: { product: Product; idx: number }) {
   };
 
   return (
-    <tr
-      className={`border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/30 transition-colors ${
-        idx % 2 === 0 ? "bg-white" : "bg-[var(--color-surface-alt)]/20"
-      }`}
-    >
-      {/* Product info */}
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] flex-shrink-0">
-            {product.photos[0] ? (
-              <img
-                src={product.photos[0]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+    <>
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete Product"
+        description={`Are you sure you want to delete "${product.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
+      <tr
+        className={`border-b border-[var(--color-border)] last:border-0 ${isEven ? "bg-white" : "bg-[var(--color-surface-alt)]"
+          }`}
+      >
+        {/* Product info */}
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] flex-shrink-0">
+              {product.photos[0] ? (
+                <img
+                  src={product.photos[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
+                  <PackageIcon size={16} />
+                </div>
+              )}
+            </div>
+            <div>
+              <Link
+                href={`/admin/products/${product.id}`}
+                className="text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
+              >
+                {product.name}
+              </Link>
+              <p className="text-xs text-[var(--color-text-muted)]">/{product.slug}</p>
+            </div>
+          </div>
+        </td>
+
+        {/* Category */}
+        <td className="px-4 py-3">
+          <span className="inline-flex items-center px-2 py-1 rounded-[var(--radius-badge)] text-xs font-medium bg-[var(--color-surface)] text-[var(--color-text)]">
+            {categoryLabels[product.category] || product.category}
+          </span>
+        </td>
+
+        {/* Price */}
+        <td className="px-4 py-3">
+          <span className="text-sm font-medium text-[var(--color-text)]">
+            {new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+            }).format(product.price)}
+          </span>
+        </td>
+
+        {/* Labels */}
+        <td className="px-4 py-3">
+          <div className="flex flex-wrap gap-1">
+            {product.labels.length === 0 ? (
+              <span className="text-xs text-[var(--color-text-muted)]">—</span>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
-                <PackageIcon size={16} />
-              </div>
-            )}
-          </div>
-          <div>
-            <Link
-              href={`/admin/products/${product.id}`}
-              className="text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
-            >
-              {product.name}
-            </Link>
-            <p className="text-xs text-[var(--color-text-muted)]">/{product.slug}</p>
-          </div>
-        </div>
-      </td>
-
-      {/* Category */}
-      <td className="px-4 py-3">
-        <span className="inline-flex items-center px-2 py-1 rounded-[var(--radius-badge)] text-xs font-medium bg-[var(--color-surface)] text-[var(--color-text)]">
-          {categoryLabels[product.category] || product.category}
-        </span>
-      </td>
-
-      {/* Price */}
-      <td className="px-4 py-3">
-        <span className="text-sm font-medium text-[var(--color-text)]">
-          {new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-          }).format(product.price)}
-        </span>
-      </td>
-
-      {/* Labels */}
-      <td className="px-4 py-3">
-        <div className="flex flex-wrap gap-1">
-          {product.labels.length === 0 ? (
-            <span className="text-xs text-[var(--color-text-muted)]">—</span>
-          ) : (
-            product.labels.map((label) => (
-              <span
-                key={label}
-                className={`px-2 py-0.5 rounded-[var(--radius-badge)] text-xs font-medium ${
-                  label === "BEST_SELLER"
+              product.labels.map((label) => (
+                <span
+                  key={label}
+                  className={`px-2 py-0.5 rounded-[var(--radius-badge)] text-xs font-medium ${label === "BEST_SELLER"
                     ? "bg-[var(--color-brown)] text-white"
                     : "bg-[var(--color-accent)] text-white"
-                }`}
-              >
-                {label === "BEST_SELLER" ? "Best Seller" : "New Arrival"}
-              </span>
-            ))
-          )}
-        </div>
-      </td>
+                    }`}
+                >
+                  {label === "BEST_SELLER" ? "Best Seller" : "New Arrival"}
+                </span>
+              ))
+            )}
+          </div>
+        </td>
 
-      {/* Status toggle */}
-      <td className="px-4 py-3">
-        <button
-          onClick={handleToggle}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-            isActive ? "bg-green-500" : "bg-[var(--color-border)]"
-          }`}
-        >
-          <span
-            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-              isActive ? "translate-x-4" : "translate-x-0.5"
-            }`}
-          />
-        </button>
-      </td>
-
-      {/* Actions */}
-      <td className="px-4 py-3 text-right">
-        <div className="flex items-center justify-end gap-3">
-          <Link
-            href={`/admin/products/${product.id}`}
-            className="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
-            title="Edit product"
-          >
-            <Edit size={16} />
-          </Link>
+        {/* Status toggle */}
+        <td className="px-4 py-3">
           <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors disabled:opacity-50"
-            title="Delete product"
+            onClick={handleToggle}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? "bg-green-500" : "bg-[var(--color-border)]"
+              }`}
           >
-            <Trash2 size={16} />
+            <span
+              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isActive ? "translate-x-4" : "translate-x-0.5"
+                }`}
+            />
           </button>
-          {product.linkShopee || product.linkTiktok ? (
-            <a
-              href={product.linkShopee || product.linkTiktok}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
-              title="External link"
+        </td>
+
+        {/* Actions */}
+        <td className="px-4 py-3 text-right">
+          <div className="flex items-center justify-end gap-2">
+            <Link
+              href={`/admin/products/${product.id}`}
+              className="text-xs font-sans text-[var(--color-accent)] hover:underline"
             >
-              <ExternalLink size={14} />
-            </a>
-          ) : null}
-        </div>
-      </td>
-    </tr>
+              Edit
+            </Link>
+            <span className="text-[var(--color-border)]">·</span>
+            <button
+              onClick={() => setShowConfirm(true)}
+              disabled={deleting}
+              className="text-xs font-sans text-red-500 hover:underline disabled:opacity-50"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </td>
+      </tr>
+    </>
   );
 }
 
