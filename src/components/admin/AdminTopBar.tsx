@@ -20,7 +20,7 @@ export async function AdminTopBar({ title }: AdminTopBarProps) {
       <div className="flex items-center justify-between h-full px-6 max-w-7xl mx-auto">
         {/* Title */}
         <h1 className="text-xl font-display font-medium text-[var(--color-text)] tracking-tight">
-          {title}
+          {/* {title} */}
         </h1>
 
         {/* User Menu */}
