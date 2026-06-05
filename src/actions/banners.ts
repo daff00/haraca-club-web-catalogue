@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { BannerSchema, type BannerInput } from "@/lib/validations";
 import { getSession } from "@/lib/auth";
+import { deleteFromStorage } from "@/lib/supabase";
 
 async function requireAuth() {
   const session = await getSession();
@@ -42,6 +43,12 @@ export async function updateBanner(id: string, input: BannerInput) {
 
   const validated = BannerSchema.parse(input);
 
+  // Get exiting banner
+  const existing = await prisma.banner.findUnique({
+    where: { id },
+    select: {photoUrl: true},
+  });
+
   // Kalau banner ini di-set active, nonaktifkan banner lain di halaman yang sama
   if (validated.isActive) {
     await prisma.banner.updateMany({
@@ -55,6 +62,11 @@ export async function updateBanner(id: string, input: BannerInput) {
     data: validated,
   });
 
+  // Delete old photo when updated
+  if (existing?.photoUrl && existing.photoUrl !== validated.photoUrl) {
+    await deleteFromStorage(existing.photoUrl);
+  }
+
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
@@ -65,7 +77,17 @@ export async function updateBanner(id: string, input: BannerInput) {
 export async function deleteBanner(id: string) {
   await requireAuth();
 
+  // Get banner
+  const banner = await prisma.banner.findUnique({
+    where: { id },
+    select: { photoUrl: true },
+  });
+
   await prisma.banner.delete({ where: { id } });
+
+  if (banner?.photoUrl) {
+    await deleteFromStorage(banner.photoUrl);
+  }
 
   revalidatePath("/admin/banners");
   revalidatePath("/");

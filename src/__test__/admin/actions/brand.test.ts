@@ -1,5 +1,14 @@
 import { getBrandContent, updateBrandContent } from "@/actions/brand";
 import { prisma } from "@/lib/prisma";
+import * as supabaseLib from "@/lib/supabase";
+
+// Mock Supabase
+jest.mock("@/lib/supabase", () => ({
+  deleteFromStorage: jest.fn(),
+  deleteMultipleFromStorage: jest.fn(),
+  supabaseAdmin: {},
+  STORAGE_BUCKET: "haraca-media",
+}));
 
 jest.mock("@/lib/prisma", () => ({
   prisma: {
@@ -92,6 +101,42 @@ describe("Brand Actions", () => {
       await expect(
         updateBrandContent({ ...validInput, brandStory: "" })
       ).rejects.toThrow();
+    });
+
+    // Storage tests
+    it("deletes removed behind photos from storage", async () => {
+      (prisma.brandContent.findFirst as jest.Mock).mockResolvedValue({
+        ...mockContent,
+        behindPhotos: [
+          { url: "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old.jpg", caption: "Old" },
+          { url: "https://xxx.supabase.co/storage/v1/object/public/haraca-media/keep.jpg", caption: "Keep" },
+        ],
+      });
+      (prisma.brandContent.update as jest.Mock).mockResolvedValue(mockContent);
+
+      await updateBrandContent({
+        ...validInput,
+        behindPhotos: [
+          { url: "https://xxx.supabase.co/storage/v1/object/public/haraca-media/keep.jpg", caption: "Keep" },
+        ],
+      });
+
+      expect(supabaseLib.deleteMultipleFromStorage).toHaveBeenCalledWith([
+        "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old.jpg",
+      ]);
+    });
+
+    it("does not delete storage when no photos removed", async () => {
+      const photos = [{ url: "https://xxx.supabase.co/storage/v1/object/public/haraca-media/keep.jpg", caption: "Keep" }];
+      (prisma.brandContent.findFirst as jest.Mock).mockResolvedValue({
+        ...mockContent,
+        behindPhotos: photos,
+      });
+      (prisma.brandContent.update as jest.Mock).mockResolvedValue(mockContent);
+
+      await updateBrandContent({ ...validInput, behindPhotos: photos });
+
+      expect(supabaseLib.deleteMultipleFromStorage).not.toHaveBeenCalled();
     });
   });
 });

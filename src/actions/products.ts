@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { ProductSchema, type ProductInput} from "@/lib/validations";
 import slugify from "slugify";
+import { deleteMultipleFromStorage } from "@/lib/supabase";
 
 // Helper - Get Admin Session
 import { getSession } from "@/lib/auth";
@@ -109,6 +110,12 @@ export async function updateProduct(id: string, input: ProductInput) {
     strict: true,
   });
 
+  // Get old photo
+  const existing = await prisma.product.findUnique({
+    where: { id },
+    select: { photos: true },
+  });
+
   const product = await prisma.product.update({
     where: { id },
     data: {
@@ -118,6 +125,16 @@ export async function updateProduct(id: string, input: ProductInput) {
       linkTiktok: validated.linkTiktok || null,
     },
   });
+
+  // Validasi foto
+  if (existing?.photos) {
+    const removedPhotos = existing.photos.filter(
+      (url) => !validated.photos.includes(url)
+    );
+    if (removedPhotos.length > 0) {
+      await deleteMultipleFromStorage(removedPhotos);
+    }
+  }
 
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${id}`);
@@ -146,7 +163,19 @@ export async function toggleProductActive(id: string, isActive: boolean) {
 export async function deleteProduct(id: string) {
   await requireAuth();
 
+  // Get produxt photo before it gets deleted
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: { photos: true },
+  });
+
+  // Delete from database
   await prisma.product.delete({ where: { id } });
+
+  // Delete photo from storage
+  if (product?.photos?.length) {
+    await deleteMultipleFromStorage(product.photos);
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/shop");
