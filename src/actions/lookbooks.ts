@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { LookbookPhotoSchema, type LookbookPhotoInput } from "@/lib/validations";
 import { getSession } from "@/lib/auth";
+import { deleteFromStorage } from "@/lib/supabase";
 
 async function requireAuth() {
   const session = await getSession();
@@ -64,6 +65,12 @@ export async function updateLookbookPhoto(id: string, input: LookbookPhotoInput)
 
   const validated = LookbookPhotoSchema.parse(input);
 
+  // Get old photo
+  const existing = await prisma.lookbookPhoto.findUnique({
+    where: { id },
+    select: { photoUrl: true },
+  });
+
   const photo = await prisma.lookbookPhoto.update({
     where: { id },
     data: {
@@ -71,6 +78,11 @@ export async function updateLookbookPhoto(id: string, input: LookbookPhotoInput)
       productId: validated.productId || null,
     },
   });
+
+  // If existing photo is updated, delete existing photo from storage
+  if (existing?.photoUrl && existing.photoUrl !== validated.photoUrl) {
+    await deleteFromStorage(existing.photoUrl);
+  }
 
   revalidatePath("/admin/lookbook");
   revalidatePath("/lookbook");
@@ -103,7 +115,18 @@ export async function updateLookbookOrder(
 export async function deleteLookbookPhoto(id: string) {
   await requireAuth();
 
+  // Get photo URL
+  const photo = await prisma.lookbookPhoto.findUnique({
+    where: { id },
+    select: { photoUrl: true},
+  });
+
   await prisma.lookbookPhoto.delete({ where: { id } });
+
+  // Delete from storage
+  if (photo?.photoUrl) {
+    await deleteFromStorage(photo.photoUrl);
+  }
 
   revalidatePath("/admin/lookbook");
   revalidatePath("/lookbook");
