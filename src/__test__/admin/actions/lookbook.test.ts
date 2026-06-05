@@ -3,8 +3,18 @@ import {
   createLookbookPhoto,
   updateLookbookOrder,
   deleteLookbookPhoto,
+  updateLookbookPhoto, // tambahkan jika ada
 } from "@/actions/lookbooks";
 import { prisma } from "@/lib/prisma";
+import * as supabaseLib from "@/lib/supabase";
+
+// Mock Supabase
+jest.mock("@/lib/supabase", () => ({
+  deleteFromStorage: jest.fn(),
+  deleteMultipleFromStorage: jest.fn(),
+  supabaseAdmin: {},
+  STORAGE_BUCKET: "haraca-media",
+}));
 
 jest.mock("@/lib/prisma", () => ({
   prisma: {
@@ -126,6 +136,55 @@ describe("Lookbook Actions", () => {
       expect(prisma.lookbookPhoto.delete).toHaveBeenCalledWith({
         where: { id: "1" },
       });
+    });
+
+    it("deletes photo from storage", async () => {
+      (prisma.lookbookPhoto.findUnique as jest.Mock).mockResolvedValue(mockPhoto);
+      (prisma.lookbookPhoto.delete as jest.Mock).mockResolvedValue(mockPhoto);
+
+      await deleteLookbookPhoto("1");
+
+      expect(supabaseLib.deleteFromStorage).toHaveBeenCalledWith(
+        "https://example.com/photo.jpg"
+      );
+    });
+  });
+
+  describe("updateLookbookPhoto", () => {
+    it("deletes old photo from storage when photo changed", async () => {
+      const oldUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old.jpg";
+      const newUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/new.jpg";
+      (prisma.lookbookPhoto.findUnique as jest.Mock).mockResolvedValue({
+        ...mockPhoto,
+        photoUrl: oldUrl,
+      });
+      (prisma.lookbookPhoto.update as jest.Mock).mockResolvedValue({
+        ...mockPhoto,
+        photoUrl: newUrl,
+      });
+
+      await updateLookbookPhoto("1", {
+        ...mockPhoto,
+        photoUrl: newUrl,
+      });
+
+      expect(supabaseLib.deleteFromStorage).toHaveBeenCalledWith(oldUrl);
+    });
+
+    it("does not delete storage when photo unchanged", async () => {
+      const sameUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/same.jpg";
+      (prisma.lookbookPhoto.findUnique as jest.Mock).mockResolvedValue({
+        ...mockPhoto,
+        photoUrl: sameUrl,
+      });
+      (prisma.lookbookPhoto.update as jest.Mock).mockResolvedValue({
+        ...mockPhoto,
+        photoUrl: sameUrl,
+      });
+
+      await updateLookbookPhoto("1", { ...mockPhoto, photoUrl: sameUrl });
+
+      expect(supabaseLib.deleteFromStorage).not.toHaveBeenCalled();
     });
   });
 });
