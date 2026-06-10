@@ -61,7 +61,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-sans transition-colors relative group ${
+                className={`text-sm font-sans font-medium transition-colors relative group ${
                   isTransparent
                     ? "text-[var(--color-bg)]/80 hover:text-[var(--color-bg)]"
                     : isActive
@@ -82,6 +82,7 @@ export function Navbar() {
             );
           })}
         </nav>
+        <div className="flex items-center gap-4" />
 
         {/* Mobile hamburger */}
         <button
