@@ -2,6 +2,7 @@ import { ScrollControls } from "@/components/public/ScrollControls";
 import { ScrollTrack } from "@/components/public/ScrollTrack";
 import { ProductCard } from "@/components/public/ProductCard";
 import type { Product } from "@/types";
+import { SectionHeader } from "@/components/public/SectionHeader";
 
 export function NewArrivalsSection({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
@@ -10,14 +11,10 @@ export function NewArrivalsSection({ products }: { products: Product[] }) {
     <section className="py-[80px]">
       <div className="content-wrapper overflow-hidden">
         <div className="flex justify-between items-end mb-10">
-          <div>
-            <h2 className="font-display text-[48px] font-medium leading-[1.2] text-[var(--color-text)]">
-              New Arrivals
-            </h2>
-            <p className="font-sans text-base text-[var(--color-text-muted)]">
-              The latest additions to our collection.
-            </p>
-          </div>
+          <SectionHeader
+            title="New Arrivals"
+            subtitle="The latest additions to our collection."
+          />
           <ScrollControls />
         </div>
 

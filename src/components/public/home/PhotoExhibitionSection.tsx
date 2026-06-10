@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { PlaceholderImage } from "@/components/public/PlaceholderImage";
+import { SectionHeader } from "@/components/public/SectionHeader";
 
 interface Photo {
   url: string;
@@ -11,14 +13,10 @@ export function PhotoExhibitionSection({ photos }: { photos: Photo[] }) {
   return (
     <section className="py-[80px] bg-[var(--color-bg)]">
       <div className="content-wrapper">
-        <div className="mb-16">
-          <h2 className="font-display text-[48px] font-medium leading-[1.2] text-[var(--color-text)]">
-            The World of Haraca
-          </h2>
-          <p className="font-sans text-base text-[var(--color-text-muted)]">
-            A closer look at how we work and what we stand for.
-          </p>
-        </div>
+        < SectionHeader
+          title="The World of Haraca"
+          subtitle="A closer look at how we work and what we stand for."
+        />
 
         {/* Bento grid row 1 */}
         <div className="grid grid-cols-12 grid-rows-2 gap-3 h-[600px]">
@@ -57,7 +55,7 @@ function PhotoSlot({
   width: number;
   height: number;
 }) {
-  if (!photo) return <div className="w-full h-full bg-[var(--color-surface-alt)]" />;
+  if (!photo) return < PlaceholderImage />;
 
   return (
     <Image

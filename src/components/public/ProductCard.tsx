@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/types";
+import { PlaceholderImage } from "@/components/public/PlaceholderImage";
 
 interface Props {
   product: Product;
@@ -34,9 +35,7 @@ export function ProductCard({ product }: Props) {
             )}
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="font-display text-5xl text-[var(--color-border)]">H</span>
-          </div>
+          <PlaceholderImage />
         )}
 
         {/* Badges */}
