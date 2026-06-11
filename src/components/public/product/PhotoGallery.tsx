@@ -30,40 +30,30 @@ export function PhotoGallery({ photos, productName }: Props) {
         )}
       </div>
 
-      {/* Thumbnails */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-        {Array.from({ length: 9 }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => photos[i] && setActiveIndex(i)}
-            className={`relative flex-none w-[72px] h-[72px] bg-[var(--color-surface)] overflow-hidden transition-all ${
-              activeIndex === i
-                ? "ring-2 ring-[var(--color-text)] ring-offset-1"
-                : "ring-1 ring-[var(--color-border)] opacity-70 hover:opacity-100"
-            }`}
-          >
-            {photos[i] ? (
+      {/* Thumbnails — hanya tampil kalau ada lebih dari 1 foto */}
+      {photos.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {photos.map((url, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              className={`relative flex-none w-[72px] h-[72px] bg-[var(--color-surface)] overflow-hidden transition-all ${
+                activeIndex === i
+                  ? "ring-2 ring-[var(--color-text)] ring-offset-1"
+                  : "ring-1 ring-[var(--color-border)] opacity-70 hover:opacity-100"
+              }`}
+            >
               <Image
-                src={photos[i]}
+                src={url}
                 alt={`${productName} ${i + 1}`}
                 fill
                 className="object-cover"
                 sizes="72px"
               />
-            ) : (
-              <div className="w-full h-full bg-[var(--color-surface)] flex items-center justify-center">
-                <span className="text-[var(--color-border)]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="1" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <path d="m21 15-5-5L5 21" />
-                  </svg>
-                </span>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

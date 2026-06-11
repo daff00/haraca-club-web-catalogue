@@ -12,7 +12,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="py-[80px] bg-[var(--color-surface)] overflow-hidden">
+    <section className="py-[80px] bg-[var(--color-surface)] overflow-hidden snap-start">
       <div className="content-wrapper mb-16">
         <SectionHeader
           title="What They Say"

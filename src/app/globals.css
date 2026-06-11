@@ -70,7 +70,6 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
 }
 
 body {
@@ -79,14 +78,6 @@ body {
   font-family: "DM Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-section {
-  scroll-snap-align: start;
-}
-
-footer {
-  scroll-snap-align: start;
 }
 
 /* ─── Typography ──────────────────────────────────────── */

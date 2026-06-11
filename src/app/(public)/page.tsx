@@ -25,12 +25,12 @@ export default async function HomePage() {
     (brandContent?.behindPhotos as { url: string; caption: string }[]) ?? [];
 
   return (
-    <>
+    <div className="snap-y snap-proximity overflow-y-scroll h-screen">
       <HeroSection banner={banner} />
       <NewArrivalsSection products={newArrivals} />
       <PhotoExhibitionSection photos={behindPhotos} />
       <BestSellersSection products={bestSellers} />
       <TestimonialsSection testimonials={testimonials} />
-    </>
+    </div>
   );
 }

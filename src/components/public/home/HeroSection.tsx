@@ -4,7 +4,7 @@ import type { Banner } from "@/types";
 
 export function HeroSection({ banner }: { banner: Banner | null }) {
   return (
-    <section className="relative w-full h-screen bg-[var(--color-dark)] flex items-center overflow-hidden">
+    <section className="relative w-full h-screen bg-[var(--color-dark)] flex items-center overflow-hidden snap-start">
       {banner?.photoUrl ? (
         <Image
           src={banner.photoUrl}

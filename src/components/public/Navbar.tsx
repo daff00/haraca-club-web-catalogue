@@ -13,23 +13,30 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+// Halaman yang punya hero dark — navbar boleh transparan
+const HERO_PAGES = ["/", "/shop", "/lookbook"];
+
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const hasHero = HERO_PAGES.includes(pathname);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    // Cek posisi awal saat halaman berganti
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
-  // Tutup menu saat navigasi
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  const isTransparent = !scrolled && !menuOpen;
+  // Transparan hanya kalau halaman punya hero DAN belum di-scroll
+  const isTransparent = hasHero && !scrolled && !menuOpen;
 
   return (
     <header
@@ -56,12 +63,15 @@ export function Navbar() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-sans font-medium transition-colors relative group ${
+                className={`text-sm font-sans transition-colors relative group ${
                   isTransparent
                     ? "text-[var(--color-bg)]/80 hover:text-[var(--color-bg)]"
                     : isActive
@@ -70,7 +80,6 @@ export function Navbar() {
                 }`}
               >
                 {link.label}
-                {/* Active indicator */}
                 <span
                   className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
                     isActive && !isTransparent
@@ -82,6 +91,7 @@ export function Navbar() {
             );
           })}
         </nav>
+
         <div className="flex items-center gap-4" />
 
         {/* Mobile hamburger */}
@@ -96,7 +106,6 @@ export function Navbar() {
         >
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
-
       </div>
 
       {/* Mobile menu */}
@@ -107,7 +116,10 @@ export function Navbar() {
       >
         <nav className="content-wrapper py-4 flex flex-col gap-1">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
