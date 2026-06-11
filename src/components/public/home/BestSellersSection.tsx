@@ -7,7 +7,7 @@ export function BestSellersSection({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-[80px] snap-start">
+    <section className="py-[80px]">
       <div className="content-wrapper">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
           <SectionHeader

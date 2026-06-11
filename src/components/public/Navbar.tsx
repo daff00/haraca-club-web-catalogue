@@ -13,7 +13,6 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-// Halaman yang punya hero dark — navbar boleh transparan
 const HERO_PAGES = ["/", "/shop", "/lookbook"];
 
 export function Navbar() {
@@ -24,18 +23,15 @@ export function Navbar() {
   const hasHero = HERO_PAGES.includes(pathname);
 
   useEffect(() => {
+    // Reset state saat halaman berganti
+    setScrolled(window.scrollY > 40);
+    setMenuOpen(false);
+
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
-    // Cek posisi awal saat halaman berganti
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
-  // Transparan hanya kalau halaman punya hero DAN belum di-scroll
   const isTransparent = hasHero && !scrolled && !menuOpen;
 
   return (
@@ -61,7 +57,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8 font-medium">
           {navLinks.map((link) => {
             const isActive =
               link.href === "/"
@@ -91,8 +87,7 @@ export function Navbar() {
             );
           })}
         </nav>
-
-        <div className="flex items-center gap-4" />
+        <div />
 
         {/* Mobile hamburger */}
         <button

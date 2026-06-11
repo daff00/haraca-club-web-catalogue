@@ -8,7 +8,7 @@ export function NewArrivalsSection({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-[80px] snap-start">
+    <section className="py-[80px]">
       <div className="content-wrapper overflow-hidden">
         <div className="flex justify-between items-end mb-10">
           <SectionHeader

@@ -11,7 +11,7 @@ export function PhotoExhibitionSection({ photos }: { photos: Photo[] }) {
   if (photos.length === 0) return null;
 
   return (
-    <section className="py-[80px] bg-[var(--color-bg)] snap-start">
+    <section className="py-[80px] bg-[var(--color-bg)]">
       <div className="content-wrapper">
         < SectionHeader
           title="The World of Haraca"
