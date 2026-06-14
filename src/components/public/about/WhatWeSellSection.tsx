@@ -76,7 +76,7 @@ export async function WhatWeSellSection() {
             );
           })}
 
-          {/* Custom — Coming Soon */}
+          {/* Custom — Coming Soon
           <div className="group cursor-not-allowed opacity-60">
             <div className="relative aspect-[3/4] bg-[var(--color-border)] overflow-hidden mb-4 flex items-center justify-center">
               <div className="text-center">
@@ -94,7 +94,7 @@ export async function WhatWeSellSection() {
             <p className="font-sans text-xs text-[var(--color-text-muted)]">
               Your vision, our craft.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

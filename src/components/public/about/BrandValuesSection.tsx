@@ -57,9 +57,9 @@ export function BrandValuesSection({ values }: Props) {
               </p>
 
               {/* Arrow */}
-              <span className="font-sans text-sm text-[var(--color-border)] group-hover:text-[var(--color-accent)] transition-colors group-hover:translate-x-1 transform duration-300 hidden md:block">
+              {/* <span className="font-sans text-sm text-[var(--color-border)] group-hover:text-[var(--color-accent)] transition-colors group-hover:translate-x-1 transform duration-300 hidden md:block">
                 →
-              </span>
+              </span> */}
             </div>
           ))}
         </div>
