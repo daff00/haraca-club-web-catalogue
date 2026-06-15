@@ -6,7 +6,7 @@ export function BrandStorySection({ story }: Props) {
   if (!story) return null;
 
   return (
-    <section className="py-[80px] bg-[var(--color-surface-alt)]">
+    <section className="py-[80px] bg-[var(--color-bg)]">
       <div className="content-wrapper">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 

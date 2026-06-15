@@ -5,7 +5,7 @@
 export type Category = "TANKTOP" | "OVERSIZE" | "REGULAR" | "SABLON";
 export type ProductLabel = "BEST_SELLER" | "NEW_ARRIVAL";
 export type LookbookCategory = "DAILY_CASUAL" | "OVERSIZE_STYLE" | "COUPLE_GROUP";
-export type BannerPage = "HOME" | "SHOP";
+export type BannerPage = "HOME" | "SHOP" | "LOOKBOOK";
 
 export interface ProductColor {
   name: string;

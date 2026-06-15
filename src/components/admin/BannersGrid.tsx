@@ -30,11 +30,13 @@ export function BannersGrid({ banners }: Props) {
 
   const homeBanners = banners.filter((b) => b.page === "HOME");
   const shopBanners = banners.filter((b) => b.page === "SHOP");
+  const lookbookBanners = banners.filter((b) => b.page === "LOOKBOOK");
 
   return (
     <div className="flex flex-col gap-8">
       <BannerSection title="Home Page" banners={homeBanners} />
       <BannerSection title="Shop Page" banners={shopBanners} />
+      <BannerSection title="Lookbook Page" banners={lookbookBanners} />
     </div>
   );
 }
@@ -141,12 +143,14 @@ function BannerCard({ banner }: { banner: Banner }) {
             <button
               onClick={handleToggleActive}
               disabled={loading}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${isActive ? "bg-green-500" : "bg-[var(--color-border)]"
-                }`}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
+                isActive ? "bg-green-500" : "bg-[var(--color-border)]"
+              }`}
             >
               <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isActive ? "translate-x-4" : "translate-x-0.5"
-                  }`}
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                  isActive ? "translate-x-4" : "translate-x-0.5"
+                }`}
               />
             </button>
             <Link

@@ -66,11 +66,10 @@ export async function HeroSection() {
       {/* Bottom strip — brand stats */}
       <div className="relative z-10 border-t border-white/10">
         <div className="content-wrapper py-8">
-          <div className="grid grid-cols-3 divide-x divide-white/10">
+          <div className="grid grid-cols-2 divide-x divide-white/10">
             {[
               { number: "4", label: "Product Categories" },
               { number: "100%", label: "Quality Materials" },
-              { number: "∞", label: "Custom Possibilities" },
             ].map((stat, i) => (
               <div
                 key={i}

@@ -181,8 +181,18 @@ async function RecentProducts() {
             >
               <td className="py-3 px-5 font-medium text-[var(--color-text)]">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-xs font-bold text-[var(--color-text)]">
-                    {product.name.charAt(0)}
+                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
+                    {product.photos[0] ? (
+                      <img
+                        src={product.photos[0]}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-[var(--color-text-muted)]">
+                        {product.name.charAt(0)}
+                      </div>
+                    )}
                   </div>
                   <span className="truncate max-w-[180px]">{product.name}</span>
                 </div>

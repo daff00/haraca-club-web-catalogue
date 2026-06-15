@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { createBanner, updateBanner } from "@/actions/banners";
 import type { Banner } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Upload, X, ArrowLeft, Save, Layout, AlertCircle } from "lucide-react";
+import { ImageIcon, Upload, X, ArrowLeft, Save, Layout } from "lucide-react";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -19,7 +19,10 @@ export function BannerForm({ banner }: Props) {
   const router = useRouter();
   const isEdit = !!banner;
 
-  const [page, setPage] = useState<"HOME" | "SHOP">(banner?.page ?? "HOME");
+  // Pastikan inisialisasi mencakup "LOOKBOOK"
+  const [page, setPage] = useState<"HOME" | "SHOP" | "LOOKBOOK">(
+    banner?.page ?? "HOME"
+  );
   const [photoUrl, setPhotoUrl] = useState(banner?.photoUrl ?? "");
   const [isActive, setIsActive] = useState(banner?.isActive ?? false);
   const [uploading, setUploading] = useState(false);
@@ -150,7 +153,7 @@ export function BannerForm({ banner }: Props) {
               Page <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-3">
-              {(["HOME", "SHOP"] as const).map((p) => (
+              {(["HOME", "SHOP", "LOOKBOOK"] as const).map((p) => (
                 <button
                   key={p}
                   type="button"
@@ -164,7 +167,7 @@ export function BannerForm({ banner }: Props) {
                     }
                   `}
                 >
-                  {p === "HOME" ? "Home Page" : "Shop Page"}
+                  {p === "HOME" ? "Home Page" : p === "SHOP" ? "Shop Page" : "Lookbook Page"}
                 </button>
               ))}
             </div>
@@ -211,9 +214,10 @@ export function BannerForm({ banner }: Props) {
                 className={`
                   border-2 border-dashed rounded-[var(--radius-card)] p-8 text-center cursor-pointer
                   transition-all duration-200
-                  ${dragActive
-                    ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
-                    : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
+                  ${
+                    dragActive
+                      ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
+                      : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
                   }
                   ${uploading ? "opacity-60 pointer-events-none" : ""}
                 `}
