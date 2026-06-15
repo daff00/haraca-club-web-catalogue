@@ -1,11 +1,16 @@
 import Image from "next/image";
+import { getActiveBanner } from "@/actions/banners";
 import { getBrandContent } from "@/actions/brand";
 import type { BehindPhoto } from "@/types";
 
 export async function HeroSection() {
-  const content = await getBrandContent();
+  const [content, aboutBanner] = await Promise.all([
+    getBrandContent(),
+    getActiveBanner("ABOUT"),
+  ]);
+
   const behindPhotos = (content?.behindPhotos as BehindPhoto[]) ?? [];
-  const heroPhoto = behindPhotos[0]?.url ?? null;
+  const heroPhoto = aboutBanner?.photoUrl ?? behindPhotos[0]?.url ?? null;
 
   return (
     <section className="min-h-screen bg-[var(--color-dark)] flex flex-col relative overflow-hidden">

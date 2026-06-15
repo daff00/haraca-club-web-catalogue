@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const HERO_PAGES = ["/", "/shop", "/lookbook"];
+const HERO_PAGES = ["/", "/shop", "/lookbook", "/about"];
 
 export function Navbar() {
   const pathname = usePathname();

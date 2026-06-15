@@ -31,12 +31,14 @@ export function BannersGrid({ banners }: Props) {
   const homeBanners = banners.filter((b) => b.page === "HOME");
   const shopBanners = banners.filter((b) => b.page === "SHOP");
   const lookbookBanners = banners.filter((b) => b.page === "LOOKBOOK");
+  const aboutBanners = banners.filter((b) => b.page === "ABOUT");
 
   return (
     <div className="flex flex-col gap-8">
       <BannerSection title="Home Page" banners={homeBanners} />
       <BannerSection title="Shop Page" banners={shopBanners} />
       <BannerSection title="Lookbook Page" banners={lookbookBanners} />
+      <BannerSection title="About Page" banners={aboutBanners} />
     </div>
   );
 }

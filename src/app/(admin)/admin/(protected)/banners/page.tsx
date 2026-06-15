@@ -35,7 +35,7 @@ export default async function BannersPage() {
         <div className="mb-6 bg-[var(--color-surface-alt)] border border-[var(--color-border)] rounded-[var(--radius-card)] px-4 py-3 flex items-start gap-3">
           <Info size={16} className="text-[var(--color-accent)] flex-shrink-0 mt-0.5" />
           <p className="text-xs text-[var(--color-text-muted)]">
-            Only <strong className="text-[var(--color-text)]">1 active banner per page</strong> (Home, Shop, and Lookbook).
+            Only <strong className="text-[var(--color-text)]">1 active banner per page</strong> (Home, Shop, Lookbook, and About).
             Activating a banner will automatically deactivate others on the same page.
           </p>
         </div>
