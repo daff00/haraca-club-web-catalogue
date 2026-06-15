@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { ProductSchema, type ProductInput} from "@/lib/validations";
+import { ProductSchema, type ProductInput } from "@/lib/validations";
 import slugify from "slugify";
 import { deleteMultipleFromStorage } from "@/lib/supabase";
 
@@ -10,34 +10,34 @@ import { deleteMultipleFromStorage } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 
 async function requireAuth() {
-    const session = await getSession();
-    if (!session) throw new Error("Unauthorized");
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
 }
 
 // CREATE
 export async function createProduct(input: ProductInput) {
-    await requireAuth();
+  await requireAuth();
 
-    const validated = ProductSchema.parse(input);
+  const validated = ProductSchema.parse(input);
 
-    const slug = slugify(validated.slug, {
-        lower: true,
-        strict: true,
-    });
+  const slug = slugify(validated.slug, {
+    lower: true,
+    strict: true,
+  });
 
-    const product = await prisma.product.create({
-        data: {
-            ...validated,
-            slug,
-            linkShopee: validated.linkShopee || null,
-            linkTiktok: validated.linkTiktok || null,
-        },
-    });
+  const product = await prisma.product.create({
+    data: {
+      ...validated,
+      slug,
+      linkShopee: validated.linkShopee || null,
+      linkTiktok: validated.linkTiktok || null,
+    },
+  });
 
-    revalidatePath("/admin/products");
-    revalidatePath("/shop");
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
 
-    return { success: true, product };
+  return { success: true, product };
 }
 
 // ─── READ ALL ─────────────────────────────────────────
@@ -46,12 +46,24 @@ export async function getProducts(filters?: {
   isActive?: boolean;
   label?: string;
   search?: string;
+  sizes?: string;
+  sort?: string;
   page?: number;
   limit?: number;
 }) {
   const page = filters?.page ?? 1;
   const limit = filters?.limit ?? 20;
   const skip = (page - 1) * limit;
+
+  // Sort product
+  const orderBy = (() => {
+    switch (filters?.sort) {
+      case "price_asc": return { price: "asc" as const };
+      case "price_desc": return { price: "desc" as const };
+      case "newest": return { createdAt: "desc" as const };
+      default: return { createdAt: "desc" as const };
+    }
+  })();
 
   const where = {
     ...(filters?.category && { category: filters.category as any }),
@@ -60,12 +72,15 @@ export async function getProducts(filters?: {
     ...(filters?.search && {
       name: { contains: filters.search, mode: "insensitive" as any },
     }),
+    ...(filters?.sizes && {
+      sizes: { hasSome: filters.sizes.split(",") },
+    }),
   };
 
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       skip,
       take: limit,
     }),

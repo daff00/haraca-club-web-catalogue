@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { BannerSchema, type BannerInput } from "@/lib/validations";
 import { getSession } from "@/lib/auth";
 import { deleteFromStorage } from "@/lib/supabase";
+import type { BannerPage } from "@/types";
 
 async function requireAuth() {
   const session = await getSession();
@@ -21,18 +22,19 @@ export async function createBanner(input: BannerInput) {
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/about");
 
   return { success: true, banner };
 }
 
-export async function getBanners(page?: "HOME" | "SHOP") {
+export async function getBanners(page?: BannerPage) {
   return prisma.banner.findMany({
     where: { ...(page && { page }) },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function getActiveBanner(page: "HOME" | "SHOP") {
+export async function getActiveBanner(page: BannerPage) {
   return prisma.banner.findFirst({
     where: { page, isActive: true },
   });
@@ -70,6 +72,7 @@ export async function updateBanner(id: string, input: BannerInput) {
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/about");
 
   return { success: true, banner };
 }
@@ -92,6 +95,7 @@ export async function deleteBanner(id: string) {
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/about");
 
   return { success: true };
 }

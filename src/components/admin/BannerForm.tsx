@@ -2,11 +2,12 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import { createBanner, updateBanner } from "@/actions/banners";
-import type { Banner } from "@/types";
+import type { Banner, BannerPage } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Upload, X, ArrowLeft, Save, Layout, AlertCircle } from "lucide-react";
+import { ImageIcon, Upload, X, ArrowLeft, Save, Layout } from "lucide-react";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -15,11 +16,20 @@ interface Props {
   banner?: Banner;
 }
 
+const BANNER_PAGES: BannerPage[] = ["HOME", "SHOP", "LOOKBOOK", "ABOUT"];
+
+const BANNER_PAGE_LABELS: Record<BannerPage, string> = {
+  HOME: "Home Page",
+  SHOP: "Shop Page",
+  LOOKBOOK: "Lookbook Page",
+  ABOUT: "About Page",
+};
+
 export function BannerForm({ banner }: Props) {
   const router = useRouter();
   const isEdit = !!banner;
 
-  const [page, setPage] = useState<"HOME" | "SHOP">(banner?.page ?? "HOME");
+  const [page, setPage] = useState<BannerPage>(banner?.page ?? "HOME");
   const [photoUrl, setPhotoUrl] = useState(banner?.photoUrl ?? "");
   const [isActive, setIsActive] = useState(banner?.isActive ?? false);
   const [uploading, setUploading] = useState(false);
@@ -112,8 +122,9 @@ export function BannerForm({ banner }: Props) {
       } else {
         toast.error(res.error || "Something went wrong");
       }
-    } catch (err: any) {
-      toast.error(err?.message ?? "Something went wrong");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -123,12 +134,12 @@ export function BannerForm({ banner }: Props) {
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto pb-24">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm mb-6">
-        <a
+        <Link
           href="/admin/banners"
           className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
         >
           Banners
-        </a>
+        </Link>
         <span className="text-[var(--color-text-muted)]">/</span>
         <span className="text-[var(--color-text)] font-medium">
           {isEdit ? "Edit Banner" : "Add New Banner"}
@@ -149,8 +160,8 @@ export function BannerForm({ banner }: Props) {
             <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
               Page <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-3">
-              {(["HOME", "SHOP"] as const).map((p) => (
+            <div className="flex flex-wrap gap-3">
+              {BANNER_PAGES.map((p) => (
                 <button
                   key={p}
                   type="button"
@@ -164,7 +175,7 @@ export function BannerForm({ banner }: Props) {
                     }
                   `}
                 >
-                  {p === "HOME" ? "Home Page" : "Shop Page"}
+                  {BANNER_PAGE_LABELS[p]}
                 </button>
               ))}
             </div>
@@ -211,9 +222,10 @@ export function BannerForm({ banner }: Props) {
                 className={`
                   border-2 border-dashed rounded-[var(--radius-card)] p-8 text-center cursor-pointer
                   transition-all duration-200
-                  ${dragActive
-                    ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
-                    : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
+                  ${
+                    dragActive
+                      ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
+                      : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
                   }
                   ${uploading ? "opacity-60 pointer-events-none" : ""}
                 `}
@@ -277,13 +289,13 @@ export function BannerForm({ banner }: Props) {
       {/* Sticky Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-[var(--color-bg)] border-t border-[var(--color-border)] py-4 px-6 z-10 shadow-[0_-2px_8px_rgba(0,0,0,0.04)] md:relative md:shadow-none md:mt-6">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <a
+          <Link
             href="/admin/banners"
             className="inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
           >
             <ArrowLeft size={16} />
             Back to Banners
-          </a>
+          </Link>
           <div className="flex gap-3">
             <Button
               type="button"

@@ -31,6 +31,8 @@ enum LookbookCategory {
 enum BannerPage {
   HOME
   SHOP
+  LOOKBOOK
+  ABOUT
 }
 
 // ─── Models ─────────────────────────────────────────────
