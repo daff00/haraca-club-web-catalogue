@@ -4,6 +4,10 @@ import { getActiveBanner } from "@/actions/banners";
 import { LookbookGrid } from "@/components/public/lookbook/LookbookGrid";
 import { LookbookCategoryTabs } from "@/components/public/lookbook/LookbookCategoryTabs";
 
+export const metadata = {
+  title: "Lookbook",
+};
+
 interface Props {
   searchParams: Promise<{ category?: string }>;
 }

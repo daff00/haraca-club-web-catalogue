@@ -8,6 +8,10 @@ import { PhotoExhibitionSection } from "@/components/public/home/PhotoExhibition
 import { BestSellersSection } from "@/components/public/home/BestSellersSection";
 import { TestimonialsSection } from "@/components/public/home/TestimonialsSection";
 
+export const metadata = {
+  title: "Home",
+};
+
 export default async function HomePage() {
   const [
     { bestSellers, newArrivals },

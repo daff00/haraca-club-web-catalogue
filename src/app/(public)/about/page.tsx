@@ -6,6 +6,10 @@ import { WhatWeSellSection } from "@/components/public/about/WhatWeSellSection";
 import { BehindTheBrandSection } from "@/components/public/about/BehindTheBrandSection";
 import type { BrandValue, BehindPhoto } from "@/types";
 
+export const metadata = {
+  title: "About",
+};
+
 export default async function AboutPage() {
   const content = await getBrandContent();
 

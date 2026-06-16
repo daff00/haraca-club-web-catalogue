@@ -7,6 +7,10 @@ import { ShopFilterBar } from "@/components/public/shop/ShopFilterBar";
 import { ShopPagination } from "@/components/public/shop/ShopPagination";
 import { PlaceholderImage } from "@/components/public/PlaceholderImage";
 
+export const metadata = {
+  title: "Shop",
+};
+
 interface Props {
   searchParams: Promise<{
     page?: string;

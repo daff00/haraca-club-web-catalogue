@@ -4,6 +4,10 @@ import { ContactInfo } from "@/components/public/contact/ContactInfo";
 import { ContactForm } from "@/components/public/contact/ContactForm";
 import type { OperatingHours } from "@/types";
 
+export const metadata = {
+  title: "Contact",
+};
+
 export default async function ContactPage() {
   const contact = await getContactInfo();
   const hours = contact?.operatingHours as OperatingHours | undefined;
