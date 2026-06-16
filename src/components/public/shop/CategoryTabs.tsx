@@ -19,7 +19,8 @@ export function CategoryTabs({ selected }: { selected: string }) {
     if (value) params.set("category", value);
     else params.delete("category");
     params.delete("page");
-    router.push(`${pathname}?${params.toString()}`);
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
   }
 
   return (

@@ -4,10 +4,10 @@
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 
-export function buildWaUrl(message: string): string {
-  const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
+export function buildWaUrl(message: string, phone?: string): string {
+  const number = phone || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
   const encoded = encodeURIComponent(message.trim());
-  return `https://wa.me/${WA_NUMBER}?text=${encoded}`;
+  return `https://wa.me/${number}?text=${encoded}`;
 }
 
 export function buildProductMessage({
