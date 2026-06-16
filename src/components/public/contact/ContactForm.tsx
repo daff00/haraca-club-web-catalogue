@@ -36,7 +36,8 @@ export function ContactForm({ waNumber }: Props) {
     if (!validate()) return;
 
     const waMessage = buildContactFormMessage({ name, phone, topic, message });
-    const url = buildWaUrl(waMessage);
+    // Perbaikan: gunakan waNumber dari props
+    const url = buildWaUrl(waNumber, waMessage);
     window.open(url, "_blank");
   }
 
@@ -47,17 +48,18 @@ export function ContactForm({ waNumber }: Props) {
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
         {/* Name */}
         <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+          <label htmlFor="contact-name" className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
             Name <span className="text-red-500">*</span>
           </label>
           <input
+            id="contact-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
+            autoComplete="name"
             className={`bg-transparent border-b py-3 font-sans text-sm text-[var(--color-text)] placeholder:text-[var(--color-border)] focus:outline-none transition-colors ${
               errors.name
                 ? "border-red-500"
@@ -69,16 +71,18 @@ export function ContactForm({ waNumber }: Props) {
           )}
         </div>
 
-        {/* WhatsApp */}
+        {/* WhatsApp Number */}
         <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+          <label htmlFor="contact-phone" className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
             WhatsApp Number <span className="text-red-500">*</span>
           </label>
           <input
+            id="contact-phone"
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="08xxxxxxxxxx"
+            autoComplete="tel"
             className={`bg-transparent border-b py-3 font-sans text-sm text-[var(--color-text)] placeholder:text-[var(--color-border)] focus:outline-none transition-colors ${
               errors.phone
                 ? "border-red-500"
@@ -92,10 +96,11 @@ export function ContactForm({ waNumber }: Props) {
 
         {/* Topic */}
         <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+          <label htmlFor="contact-topic" className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
             Topic
           </label>
           <select
+            id="contact-topic"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             className="bg-transparent border-b border-[var(--color-border)] py-3 font-sans text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-text)] transition-colors cursor-pointer"
@@ -110,10 +115,11 @@ export function ContactForm({ waNumber }: Props) {
 
         {/* Message */}
         <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+          <label htmlFor="contact-message" className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
             Message <span className="text-red-500">*</span>
           </label>
           <textarea
+            id="contact-message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Tell us what's on your mind..."
@@ -129,7 +135,6 @@ export function ContactForm({ waNumber }: Props) {
           )}
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           className="mt-2 bg-[var(--color-text)] text-[var(--color-bg)] font-sans text-sm font-medium py-4 hover:bg-[var(--color-brown-dark)] transition-colors"
@@ -140,7 +145,6 @@ export function ContactForm({ waNumber }: Props) {
         <p className="font-sans text-xs text-[var(--color-text-muted)] text-center">
           Submitting will open WhatsApp with your message pre-filled.
         </p>
-
       </form>
     </div>
   );
