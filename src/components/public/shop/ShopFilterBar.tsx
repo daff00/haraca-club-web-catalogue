@@ -23,7 +23,8 @@ export function ShopFilterBar({ selectedSizes, selectedSort }: Props) {
         else params.delete(key);
       });
       params.delete("page");
-      router.push(`${pathname}?${params.toString()}`);
+      const queryString = params.toString();
+      router.push(queryString ? `${pathname}?${queryString}` : pathname);
     },
     [pathname, router, searchParams]
   );
@@ -39,7 +40,6 @@ export function ShopFilterBar({ selectedSizes, selectedSort }: Props) {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-[var(--color-surface)] p-6 mb-12">
       <div className="flex flex-wrap items-center gap-10">
-
         {/* Size */}
         <div className="space-y-3">
           <span className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)] block">
@@ -64,7 +64,6 @@ export function ShopFilterBar({ selectedSizes, selectedSort }: Props) {
             })}
           </div>
         </div>
-
       </div>
 
       {/* Sort */}

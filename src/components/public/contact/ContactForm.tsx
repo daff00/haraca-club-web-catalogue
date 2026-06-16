@@ -37,7 +37,7 @@ export function ContactForm({ waNumber }: Props) {
 
     const waMessage = buildContactFormMessage({ name, phone, topic, message });
     // Perbaikan: gunakan waNumber dari props
-    const url = buildWaUrl(waNumber, waMessage);
+    const url = buildWaUrl(waMessage, waNumber);
     window.open(url, "_blank");
   }
 

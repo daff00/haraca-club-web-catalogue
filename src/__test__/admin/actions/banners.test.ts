@@ -10,7 +10,7 @@ jest.mock("@/lib/supabase", () => ({
   STORAGE_BUCKET: "haraca-media",
 }));
 
-// Mock Prisma (lengkapi dengan findUnique)
+// Mock Prisma
 jest.mock("@/lib/prisma", () => ({
   prisma: {
     banner: {
@@ -49,17 +49,35 @@ describe("Banner Actions", () => {
       expect(result).toHaveLength(1);
     });
 
-    it("filters by page", async () => {
+    it("filters by HOME page", async () => {
       (prisma.banner.findMany as jest.Mock).mockResolvedValue([mockBanner]);
       await banners.getBanners("HOME");
       expect(prisma.banner.findMany).toHaveBeenCalledWith(
         expect.objectContaining({ where: { page: "HOME" } })
       );
     });
+
+    // --- NEW: LOOKBOOK page filter ---
+    it("filters by LOOKBOOK page", async () => {
+      (prisma.banner.findMany as jest.Mock).mockResolvedValue([]);
+      await banners.getBanners("LOOKBOOK");
+      expect(prisma.banner.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { page: "LOOKBOOK" } })
+      );
+    });
+
+    // --- NEW: ABOUT page filter ---
+    it("filters by ABOUT page", async () => {
+      (prisma.banner.findMany as jest.Mock).mockResolvedValue([]);
+      await banners.getBanners("ABOUT");
+      expect(prisma.banner.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { page: "ABOUT" } })
+      );
+    });
   });
 
   describe("getActiveBanner", () => {
-    it("returns active banner for a page", async () => {
+    it("returns active banner for HOME page", async () => {
       (prisma.banner.findFirst as jest.Mock).mockResolvedValue(mockBanner);
       const result = await banners.getActiveBanner("HOME");
       expect(prisma.banner.findFirst).toHaveBeenCalledWith({
@@ -73,10 +91,32 @@ describe("Banner Actions", () => {
       const result = await banners.getActiveBanner("SHOP");
       expect(result).toBeNull();
     });
+
+    // --- NEW: LOOKBOOK active banner ---
+    it("returns active banner for LOOKBOOK page", async () => {
+      const lookbookBanner = { ...mockBanner, page: "LOOKBOOK" as const };
+      (prisma.banner.findFirst as jest.Mock).mockResolvedValue(lookbookBanner);
+      const result = await banners.getActiveBanner("LOOKBOOK");
+      expect(prisma.banner.findFirst).toHaveBeenCalledWith({
+        where: { page: "LOOKBOOK", isActive: true },
+      });
+      expect(result?.page).toBe("LOOKBOOK");
+    });
+
+    // --- NEW: ABOUT active banner ---
+    it("returns active banner for ABOUT page", async () => {
+      const aboutBanner = { ...mockBanner, page: "ABOUT" as const };
+      (prisma.banner.findFirst as jest.Mock).mockResolvedValue(aboutBanner);
+      const result = await banners.getActiveBanner("ABOUT");
+      expect(prisma.banner.findFirst).toHaveBeenCalledWith({
+        where: { page: "ABOUT", isActive: true },
+      });
+      expect(result?.page).toBe("ABOUT");
+    });
   });
 
   describe("createBanner", () => {
-    it("creates a banner successfully", async () => {
+    it("creates a HOME banner successfully", async () => {
       (prisma.banner.create as jest.Mock).mockResolvedValue(mockBanner);
       const result = await banners.createBanner({
         page: "HOME",
@@ -86,10 +126,44 @@ describe("Banner Actions", () => {
       expect(result.success).toBe(true);
       expect(prisma.banner.create).toHaveBeenCalled();
     });
+
+    // --- NEW: LOOKBOOK creation ---
+    it("creates a LOOKBOOK banner", async () => {
+      const lookbookBanner = { ...mockBanner, page: "LOOKBOOK" as const };
+      (prisma.banner.create as jest.Mock).mockResolvedValue(lookbookBanner);
+      const result = await banners.createBanner({
+        page: "LOOKBOOK",
+        photoUrl: "https://example.com/lookbook-banner.jpg",
+        isActive: false,
+      });
+      expect(result.success).toBe(true);
+      expect(prisma.banner.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ page: "LOOKBOOK" }),
+        })
+      );
+    });
+
+    // --- NEW: ABOUT creation ---
+    it("creates an ABOUT banner", async () => {
+      const aboutBanner = { ...mockBanner, page: "ABOUT" as const };
+      (prisma.banner.create as jest.Mock).mockResolvedValue(aboutBanner);
+      const result = await banners.createBanner({
+        page: "ABOUT",
+        photoUrl: "https://example.com/about-banner.jpg",
+        isActive: false,
+      });
+      expect(result.success).toBe(true);
+      expect(prisma.banner.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ page: "ABOUT" }),
+        })
+      );
+    });
   });
 
   describe("updateBanner", () => {
-    it("deactivates other banners when setting active", async () => {
+    it("deactivates other banners when setting active (HOME)", async () => {
       (prisma.banner.findUnique as jest.Mock).mockResolvedValue(mockBanner);
       (prisma.banner.update as jest.Mock).mockResolvedValue(mockBanner);
       (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
@@ -160,6 +234,54 @@ describe("Banner Actions", () => {
       });
 
       expect(supabaseLib.deleteFromStorage).not.toHaveBeenCalled();
+    });
+
+    // --- NEW: LOOKBOOK deactivates others ---
+    it("deactivates other LOOKBOOK banners when setting active", async () => {
+      (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "LOOKBOOK",
+      });
+      (prisma.banner.update as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "LOOKBOOK",
+      });
+      (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
+
+      await banners.updateBanner("1", {
+        page: "LOOKBOOK",
+        photoUrl: "https://example.com/lookbook-banner.jpg",
+        isActive: true,
+      });
+
+      expect(prisma.banner.updateMany).toHaveBeenCalledWith({
+        where: { page: "LOOKBOOK", id: { not: "1" } },
+        data: { isActive: false },
+      });
+    });
+
+    // --- NEW: ABOUT deactivates others ---
+    it("deactivates other ABOUT banners when setting active", async () => {
+      (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "ABOUT",
+      });
+      (prisma.banner.update as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "ABOUT",
+      });
+      (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
+
+      await banners.updateBanner("1", {
+        page: "ABOUT",
+        photoUrl: "https://example.com/about-banner.jpg",
+        isActive: true,
+      });
+
+      expect(prisma.banner.updateMany).toHaveBeenCalledWith({
+        where: { page: "ABOUT", id: { not: "1" } },
+        data: { isActive: false },
+      });
     });
   });
 
