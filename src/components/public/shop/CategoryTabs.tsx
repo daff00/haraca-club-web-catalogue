@@ -24,14 +24,14 @@ export function CategoryTabs({ selected }: { selected: string }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-8 mb-12 border-b border-[var(--color-border)] pb-0">
+    <div className="flex items-center gap-4 overflow-x-auto pb-4 mb-12 border-b border-[var(--color-border)] md:justify-center md:overflow-visible">
       {TABS.map((tab) => {
         const isActive = selected === tab.value;
         return (
           <button
             key={tab.value}
             onClick={() => handleTab(tab.value)}
-            className={`font-sans text-sm uppercase tracking-wider pb-4 border-b-2 transition-colors ${
+            className={`min-w-max whitespace-nowrap font-sans text-sm uppercase tracking-wider pb-4 border-b-2 transition-colors ${
               isActive
                 ? "text-[var(--color-text)] border-[var(--color-text)]"
                 : "text-[var(--color-text-muted)] border-transparent hover:text-[var(--color-text)]"

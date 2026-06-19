@@ -10,31 +10,69 @@ interface Photo {
 export function PhotoExhibitionSection({ photos }: { photos: Photo[] }) {
   if (photos.length === 0) return null;
 
+  const firstPhoto = photos[0];
+  const secondPhoto = photos[1];
+  const thirdPhoto = photos[2];
+  const remainingPhotos = photos.slice(3, 6);
+
   return (
     <section className="py-[80px] bg-[var(--color-bg)]">
       <div className="content-wrapper">
-        < SectionHeader
+        <SectionHeader
           title="The World of Haraca"
           subtitle="A closer look at how we work and what we stand for."
         />
 
-        {/* Bento grid row 1 */}
-        <div className="grid grid-cols-12 grid-rows-2 gap-3 h-[600px]">
-          <div className="col-span-12 md:col-span-8 md:row-span-2 overflow-hidden bg-[var(--color-surface)]">
-            <PhotoSlot photo={photos[0]} width={900} height={600} />
+        {/* Mobile stack */}
+        <div className="grid gap-3 md:hidden">
+          <div className="overflow-hidden bg-[var(--color-surface)] h-[320px]">
+            <PhotoSlot photo={firstPhoto} width={900} height={600} />
           </div>
-          <div className="hidden md:block col-span-4 row-span-1 overflow-hidden bg-[var(--color-surface)]">
-            <PhotoSlot photo={photos[1]} width={400} height={300} />
+
+          <div className="grid grid-cols-2 gap-3">
+            {secondPhoto && (
+              <div className="overflow-hidden bg-[var(--color-surface)] h-[220px]">
+                <PhotoSlot photo={secondPhoto} width={600} height={400} />
+              </div>
+            )}
+            {thirdPhoto && (
+              <div className="overflow-hidden bg-[var(--color-surface)] h-[220px]">
+                <PhotoSlot photo={thirdPhoto} width={600} height={400} />
+              </div>
+            )}
           </div>
-          <div className="hidden md:block col-span-4 row-span-1 overflow-hidden bg-[var(--color-surface)]">
-            <PhotoSlot photo={photos[2]} width={400} height={300} />
-          </div>
+
+          {remainingPhotos.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {remainingPhotos.map((photo, i) => (
+                <div key={i} className="overflow-hidden bg-[var(--color-surface)] h-[220px]">
+                  <PhotoSlot photo={photo} width={400} height={300} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Bento grid row 2 */}
-        {photos.length > 3 && (
+        {/* Desktop bento layout */}
+        <div className="hidden md:grid grid-cols-12 grid-rows-2 gap-3 h-[600px]">
+          <div className="col-span-12 md:col-span-8 md:row-span-2 overflow-hidden bg-[var(--color-surface)]">
+            <PhotoSlot photo={firstPhoto} width={900} height={600} />
+          </div>
+          {secondPhoto && (
+            <div className="col-span-4 row-span-1 overflow-hidden bg-[var(--color-surface)]">
+              <PhotoSlot photo={secondPhoto} width={400} height={300} />
+            </div>
+          )}
+          {thirdPhoto && (
+            <div className="col-span-4 row-span-1 overflow-hidden bg-[var(--color-surface)]">
+              <PhotoSlot photo={thirdPhoto} width={400} height={300} />
+            </div>
+          )}
+        </div>
+
+        {remainingPhotos.length > 0 && (
           <div className="grid grid-cols-12 gap-3 mt-3 h-[300px]">
-            {[photos[3], photos[4], photos[5]].map((photo, i) => (
+            {remainingPhotos.map((photo, i) => (
               <div key={i} className="col-span-4 overflow-hidden bg-[var(--color-surface)]">
                 <PhotoSlot photo={photo} width={400} height={300} />
               </div>
