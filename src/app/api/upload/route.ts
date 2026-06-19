@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
+import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
   const session = await getSession();
@@ -15,27 +16,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
   }
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-  // After getting the file
-  if (file.size > MAX_FILE_SIZE) {
-    return NextResponse.json(
-      { error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit` },
-      { status: 400 }
-    );
-  }
-
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const ext = file.name.split(".").pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  // Konversi ke WebP dengan sharp
+  const webpBuffer = await sharp(buffer)
+    .webp({ quality: 85 })
+    .toBuffer();
+
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
   const filePath = `products/${fileName}`;
 
   const { error } = await supabaseAdmin.storage
     .from(STORAGE_BUCKET)
-    .upload(filePath, buffer, {
-      contentType: file.type,
+    .upload(filePath, webpBuffer, {
+      contentType: "image/webp",
       upsert: false,
     });
 
