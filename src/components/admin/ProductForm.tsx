@@ -531,6 +531,7 @@ export function ProductForm({ product }: Props) {
                     <div key={i} className="relative group">
                       <div className="relative aspect-square rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
                         <Image
+                          fill
                           src={url}
                           alt={`Product ${i + 1}`}
                           className="w-full h-full object-cover"

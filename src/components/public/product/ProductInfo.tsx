@@ -78,7 +78,7 @@ export function ProductInfo({ product }: Props) {
             href={product.linkShopee}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center font-sans text-sm font-medium py-4 bg-[var(--color-text)] text-[var(--color-bg)] hover:bg-[var(--color-brown-dark)] transition-colors"
+            className="w-full flex items-center justify-center font-sans text-sm font-medium py-4 bg-[#EE4D2D] text-[var(--color-bg)] hover:bg-[var(--color-brown-dark)] transition-colors"
           >
             Buy on Shopee
           </a>
