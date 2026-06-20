@@ -36,8 +36,8 @@ export function BehindTheBrandSection({ photos }: Props) {
             const offset = i % 2 !== 0 ? "md:mt-12" : "";
 
             return (
-              <div key={i} className={`relative group ${offset}`}>
-                <div className="aspect-[1/1.2] overflow-hidden bg-[var(--color-border)]">
+                <div key={i} className={`relative group ${offset}`}>
+                  <div className="aspect-square overflow-hidden bg-[var(--color-border)]">
                   {photo?.url ? (
                     <Image
                       src={photo.url}

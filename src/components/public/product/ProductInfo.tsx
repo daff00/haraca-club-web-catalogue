@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { VariantSelector } from "./VariantSelector";
 import { QuantitySelector } from "./QuantitySelector";
 import { buildWaUrl, buildProductMessage } from "@/lib/wa";
@@ -115,9 +115,18 @@ export function ProductInfo({ product }: Props) {
             <p className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
               Description
             </p>
-            <p className="font-sans text-sm text-[var(--color-text)] leading-relaxed">
-              {product.description}
-            </p>
+            <div className="font-sans text-sm text-[var(--color-text)] leading-relaxed space-y-3">
+              {product.description.split(/\n{2,}/).map((para, i) => (
+                <p key={i} className="m-0">
+                  {para.split(/\n/).map((line, j) => (
+                    <Fragment key={j}>
+                      {line}
+                      {j < para.split(/\n/).length - 1 && <br />}
+                    </Fragment>
+                  ))}
+                </p>
+              ))}
+            </div>
           </div>
         </>
       )}

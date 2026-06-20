@@ -30,12 +30,12 @@ export function LookbookGrid({ photos }: Props) {
             onClick={() => setSelected(photo)}
           >
             {/* Photo */}
-            <div className="overflow-hidden bg-[var(--color-surface)]">
+              <div className="overflow-hidden bg-[var(--color-surface)]">
               <Image
                 src={photo.photoUrl}
                 alt={photo.product?.name ?? "Lookbook"}
                 width={600}
-                height={800}
+                height={600}
                 className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 50vw, 33vw"
               />

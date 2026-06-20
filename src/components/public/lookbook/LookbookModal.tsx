@@ -55,7 +55,7 @@ export function LookbookModal({ photo, onClose }: Props) {
         </button>
 
         {/* Photo */}
-        <div className="relative w-full md:w-1/2 aspect-[3/4] flex-shrink-0 bg-[var(--color-surface)]">
+        <div className="relative w-full md:w-1/2 aspect-square flex-shrink-0 bg-[var(--color-surface)]">
           <Image
             src={photo.photoUrl}
             alt={photo.product?.name ?? "Lookbook"}

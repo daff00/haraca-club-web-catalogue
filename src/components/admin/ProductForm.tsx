@@ -76,6 +76,9 @@ export function ProductForm({ product }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragIndexRef = useRef<number | null>(null);
+  const dropIndexRef = useRef<number | null>(null);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   // ─── Handlers ─────────────────────────────────────────
   const handleNameChange = useCallback(
@@ -211,6 +214,52 @@ export function ProductForm({ product }: Props) {
 
   const removePhoto = (index: number) => {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Drag & drop reorder handlers for photos
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    dragIndexRef.current = index;
+    setDraggingIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    try {
+      e.dataTransfer.setData("text/plain", String(index));
+    } catch (_) {
+      // some browsers may throw here
+    }
+  };
+
+  const handleDragOverPhoto = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    dropIndexRef.current = index;
+  };
+
+  const handleDropPhoto = (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = dragIndexRef.current ?? Number(e.dataTransfer.getData("text/plain"));
+    const to = dropIndexRef.current;
+    if (from === null || to === null || from === to) {
+      dragIndexRef.current = null;
+      dropIndexRef.current = null;
+      setDraggingIndex(null);
+      return;
+    }
+
+    setPhotos((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+
+    dragIndexRef.current = null;
+    dropIndexRef.current = null;
+    setDraggingIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    dragIndexRef.current = null;
+    dropIndexRef.current = null;
+    setDraggingIndex(null);
   };
 
   const validate = (): boolean => {
@@ -528,7 +577,15 @@ export function ProductForm({ product }: Props) {
               {photos.length > 0 && (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
                   {photos.map((url, i) => (
-                    <div key={i} className="relative group">
+                    <div
+                      key={i}
+                      className={`relative group ${draggingIndex === i ? "opacity-60" : ""}`}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, i)}
+                      onDragOver={(e) => handleDragOverPhoto(e, i)}
+                      onDrop={handleDropPhoto}
+                      onDragEnd={handleDragEnd}
+                    >
                       <div className="relative aspect-square rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
                         <Image
                           fill

@@ -15,7 +15,7 @@ export function PhotoGallery({ photos, productName }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {/* Main photo */}
-      <div className="relative aspect-[4/5] bg-[var(--color-surface)] overflow-hidden group">
+      <div className="relative aspect-square bg-[var(--color-surface)] overflow-hidden group">
         {photos[activeIndex] ? (
           <Image
             src={photos[activeIndex]}
