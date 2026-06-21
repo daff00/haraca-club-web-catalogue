@@ -27,7 +27,13 @@ export function ProductsFilterBar({ search, category }: Props) {
         else params.delete(key);
       });
       params.delete("page");
-      router.push(`${pathname}?${params.toString()}`);
+      const href = `${pathname}?${params.toString()}`;
+
+      const scrollY = typeof window !== "undefined" ? window.scrollY : 0;
+      router.push(href);
+      if (typeof window !== "undefined") {
+        setTimeout(() => window.scrollTo({ top: scrollY }), 60);
+      }
     },
     [pathname, router, searchParams]
   );

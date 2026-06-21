@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
@@ -24,7 +25,13 @@ export function ShopFilterBar({ selectedSizes, selectedSort }: Props) {
       });
       params.delete("page");
       const queryString = params.toString();
-      router.push(queryString ? `${pathname}?${queryString}` : pathname);
+      const href = queryString ? `${pathname}?${queryString}` : pathname;
+
+      const scrollY = typeof window !== "undefined" ? window.scrollY : 0;
+      router.push(href);
+      if (typeof window !== "undefined") {
+        setTimeout(() => window.scrollTo({ top: scrollY }), 60);
+      }
     },
     [pathname, router, searchParams]
   );
@@ -48,18 +55,28 @@ export function ShopFilterBar({ selectedSizes, selectedSort }: Props) {
           <div className="flex gap-2">
             {SIZES.map((size) => {
               const active = selectedSizes.includes(size);
+              const params = new URLSearchParams(searchParams.toString());
+              const next = active
+                ? selectedSizes.filter((s) => s !== size)
+                : [...selectedSizes, size];
+              if (next.length) params.set("sizes", next.join(","));
+              else params.delete("sizes");
+              params.delete("page");
+              const href = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+
               return (
-                <button
+                <Link
                   key={size}
-                  onClick={() => toggleSize(size)}
-                  className={`w-10 h-10 flex items-center justify-center font-sans text-xs transition-colors ${
+                  href={href}
+                  scroll={false}
+                  className={`w-10 h-10 inline-flex items-center justify-center font-sans text-xs transition-colors ${
                     active
                       ? "bg-[var(--color-text)] text-[var(--color-bg)] border border-[var(--color-text)]"
                       : "border border-[var(--color-border)] hover:border-[var(--color-text)]"
                   }`}
                 >
                   {size}
-                </button>
+                </Link>
               );
             })}
           </div>
