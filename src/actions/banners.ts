@@ -40,6 +40,13 @@ export async function getActiveBanner(page: BannerPage) {
   });
 }
 
+export async function getActiveBanners(page: BannerPage) {
+  return prisma.banner.findMany({
+    where: { page, isActive: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function updateBanner(id: string, input: BannerInput) {
   await requireAuth();
 
@@ -51,13 +58,7 @@ export async function updateBanner(id: string, input: BannerInput) {
     select: {photoUrl: true},
   });
 
-  // Kalau banner ini di-set active, nonaktifkan banner lain di halaman yang sama
-  if (validated.isActive) {
-    await prisma.banner.updateMany({
-      where: { page: validated.page, id: { not: id } },
-      data: { isActive: false },
-    });
-  }
+  // Allow multiple active banners now (carousel); do not enforce exclusivity
 
   const banner = await prisma.banner.update({
     where: { id },

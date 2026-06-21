@@ -266,7 +266,7 @@ export function BannerForm({ banner }: Props) {
                 Set as Active
               </p>
               <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                This will automatically deactivate other banners on the same page
+                This will automatically deactivate other banners on the same page (except home page banners).
               </p>
             </div>
             <button

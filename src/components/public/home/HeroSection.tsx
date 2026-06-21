@@ -1,23 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
+import { HeroCarousel } from "@/components/public/home/HeroCarousel";
 import type { Banner } from "@/types";
 
-export function HeroSection({ banner }: { banner: Banner | null }) {
+export function HeroSection({ banners }: { banners: Banner[] }) {
   return (
     <section className="relative w-full h-screen bg-[var(--color-dark)] flex items-center overflow-hidden">
-      {banner?.photoUrl ? (
-        <Image
-          src={banner.photoUrl}
-          alt="Haraca Hero"
-          fill
-          className="object-cover opacity-60"
-          priority
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-dark)] via-[#2a1f14] to-[var(--color-dark)]" />
-      )}
+      <HeroCarousel banners={banners} />
 
-      <div className="relative z-10 content-wrapper w-full">
+      <div className="relative z-20 content-wrapper w-full">
         <div className="max-w-xl">
           <p className="font-sans text-xs text-[var(--color-accent)] mb-4 tracking-[0.2em] uppercase">
             New Collection
@@ -25,7 +15,7 @@ export function HeroSection({ banner }: { banner: Banner | null }) {
           <h1 className="font-display text-[64px] leading-[1.1] font-medium text-[var(--color-surface-alt)] mb-5">
             Wear It Simply
           </h1>
-          <p className="font-sans text-base text-[var(--color-bg)]/60 mb-10 max-w-md leading-relaxed">
+          <p className="font-sans text-base text-[var(--color-surface-alt)]/90 mb-10 max-w-md leading-relaxed drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
             Thoughtfully made essentials for those who move with purpose —
             comfortable, clean, and always ready.
           </p>
