@@ -31,11 +31,13 @@ export default async function ProductDetailPage({ params }: Props) {
           <Link href="/shop" className="hover:text-[var(--color-text)] transition-colors">
             Shop
           </Link>
+          {/*
           <span>›</span>
           <span className="capitalize">
             {product.category.charAt(0) + product.category.slice(1).toLowerCase()}
           </span>
           <span>›</span>
+          */}
           <span className="text-[var(--color-text)]">{product.name}</span>
         </div>
 
