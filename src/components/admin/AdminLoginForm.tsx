@@ -63,7 +63,6 @@ export function AdminLoginForm() {
                 required
                 autoComplete="email"
                 className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
-                placeholder="admin@haraca.com"
               />
             </div>
 
@@ -78,7 +77,6 @@ export function AdminLoginForm() {
                   required
                   autoComplete="current-password"
                   className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2.5 pr-10 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
-                  placeholder="••••••••"
                 />
                 <button
                   type="button"
