@@ -1,8 +1,8 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { VariantSelector } from "./VariantSelector";
-import { QuantitySelector } from "./QuantitySelector";
+import { VariantSelector } from "@/components/public/product/VariantSelector";
+import { QuantitySelector } from "@/components/public/product/QuantitySelector";
 import { buildWaUrl, buildProductMessage } from "@/lib/wa";
 import type { Product, ProductColor } from "@/types";
 

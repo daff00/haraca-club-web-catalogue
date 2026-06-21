@@ -79,6 +79,10 @@ export function ProductForm({ product }: Props) {
   const dragIndexRef = useRef<number | null>(null);
   const dropIndexRef = useRef<number | null>(null);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  // Color drag & drop refs/state
+  const colorDragIndexRef = useRef<number | null>(null);
+  const colorDropIndexRef = useRef<number | null>(null);
+  const [colorDraggingIndex, setColorDraggingIndex] = useState<number | null>(null);
 
   // ─── Handlers ─────────────────────────────────────────
   const handleNameChange = useCallback(
@@ -260,6 +264,53 @@ export function ProductForm({ product }: Props) {
     dragIndexRef.current = null;
     dropIndexRef.current = null;
     setDraggingIndex(null);
+  };
+
+  // Color drag & drop handlers
+  const handleColorDragStart = (e: React.DragEvent, index: number) => {
+    colorDragIndexRef.current = index;
+    setColorDraggingIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    try {
+      e.dataTransfer.setData("text/plain", String(index));
+    } catch (_) {
+      // ignore
+    }
+  };
+
+  const handleColorDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    colorDropIndexRef.current = index;
+  };
+
+  const handleColorDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const from =
+      colorDragIndexRef.current ?? Number(e.dataTransfer.getData("text/plain"));
+    const to = colorDropIndexRef.current;
+    if (from === null || to === null || from === to) {
+      colorDragIndexRef.current = null;
+      colorDropIndexRef.current = null;
+      setColorDraggingIndex(null);
+      return;
+    }
+
+    setColors((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+
+    colorDragIndexRef.current = null;
+    colorDropIndexRef.current = null;
+    setColorDraggingIndex(null);
+  };
+
+  const handleColorDragEnd = () => {
+    colorDragIndexRef.current = null;
+    colorDropIndexRef.current = null;
+    setColorDraggingIndex(null);
   };
 
   const validate = (): boolean => {
@@ -791,7 +842,14 @@ export function ProductForm({ product }: Props) {
                   {colors.map((color, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full px-2.5 py-1 text-xs text-[var(--color-text)]"
+                      draggable
+                      onDragStart={(e) => handleColorDragStart(e, i)}
+                      onDragOver={(e) => handleColorDragOver(e, i)}
+                      onDrop={handleColorDrop}
+                      onDragEnd={handleColorDragEnd}
+                      className={`inline-flex items-center gap-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full px-2.5 py-1 text-xs text-[var(--color-text)] ${
+                        colorDraggingIndex === i ? "opacity-60" : ""
+                      }`}
                     >
                       <span
                         className="w-3 h-3 rounded-full border border-gray-300"
