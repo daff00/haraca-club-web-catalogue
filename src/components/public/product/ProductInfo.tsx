@@ -107,29 +107,7 @@ export function ProductInfo({ product }: Props) {
         </a>
       </div>
 
-      {/* Description */}
-      {product.description && (
-        <>
-          <div className="border-t border-[var(--color-border)]" />
-          <div className="flex flex-col gap-3">
-            <p className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
-              Description
-            </p>
-            <div className="font-sans text-sm text-[var(--color-text)] leading-relaxed space-y-3">
-              {product.description.split(/\n{2,}/).map((para, i) => (
-                <p key={i} className="m-0">
-                  {para.split(/\n/).map((line, j) => (
-                    <Fragment key={j}>
-                      {line}
-                      {j < para.split(/\n/).length - 1 && <br />}
-                    </Fragment>
-                  ))}
-                </p>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+      {/* Description moved to product page */}
 
       {/* Material */}
       {product.material && (
