@@ -13,9 +13,10 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
     if (!banners || banners.length === 0) return;
     if (paused) return;
 
+    // auto-advance every 4 seconds (ideal gap)
     interval.current = window.setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
-    }, 5000);
+    }, 4000);
 
     return () => {
       if (interval.current) window.clearInterval(interval.current);
@@ -33,7 +34,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
 
   return (
     <div
-      className="absolute inset-0"
+      className="absolute inset-0 pointer-events-auto"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -48,7 +49,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
             src={b.photoUrl}
             alt={`Banner ${i + 1}`}
             fill
-            className="object-cover"
+            className="object-cover object-center md:object-left"
             priority={i === 0}
           />
         </div>
@@ -57,35 +58,18 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
       {/* Dark overlay to improve text legibility */}
       <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
 
-      {/* Controls */}
+      {/* Indicators only (arrows removed) */}
       {banners.length > 1 && (
-        <>
-          <button
-            aria-label="Previous"
-            onClick={() => setIndex((i) => (i - 1 + banners.length) % banners.length)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 text-white p-2 rounded"
-          >
-            ‹
-          </button>
-          <button
-            aria-label="Next"
-            onClick={() => setIndex((i) => (i + 1) % banners.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 text-white p-2 rounded"
-          >
-            ›
-          </button>
-
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-20 flex items-center gap-2">
-            {banners.map((_, i) => (
-              <button
-                key={i}
-                aria-label={`Go to slide ${i + 1}`}
-                onClick={() => setIndex(i)}
-                className={`w-3 h-3 rounded-full ${i === index ? "bg-[var(--color-accent)]" : "bg-[var(--color-border)]"}`}
-              />
-            ))}
-          </div>
-        </>
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-30 flex items-center gap-2">
+          {banners.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setIndex(i)}
+              className={`w-3 h-3 rounded-full ${i === index ? "bg-[var(--color-accent)]" : "bg-[var(--color-border)]"}`}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
