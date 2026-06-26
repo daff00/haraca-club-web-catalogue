@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { BannerSchema, type BannerInput } from "@/lib/validations";
 import { getSession } from "@/lib/auth";
-import { deleteFromStorage } from "@/lib/supabase";
+import { deleteFromStorage, deleteMultipleFromStorage } from "@/lib/supabase";
 import type { BannerPage } from "@/types";
 
 async function requireAuth() {
@@ -52,28 +52,42 @@ export async function updateBanner(id: string, input: BannerInput) {
 
   const validated = BannerSchema.parse(input);
 
-  // Get exiting banner
   const existing = await prisma.banner.findUnique({
     where: { id },
-    select: {photoUrl: true},
+    select: { photoUrl: true, photoUrlMobile: true },
   });
 
-  // Allow multiple active banners now (carousel); do not enforce exclusivity
+  if (validated.isActive) {
+    await prisma.banner.updateMany({
+      where: { page: validated.page, id: { not: id } },
+      data: { isActive: false },
+    });
+  }
 
   const banner = await prisma.banner.update({
     where: { id },
-    data: validated,
+    data: {
+      ...validated,
+      photoUrlMobile: validated.photoUrlMobile || null,
+    },
   });
 
-  // Delete old photo when updated
+  // Hapus foto lama dari storage kalau diganti
+  const urlsToDelete: string[] = [];
   if (existing?.photoUrl && existing.photoUrl !== validated.photoUrl) {
-    await deleteFromStorage(existing.photoUrl);
+    urlsToDelete.push(existing.photoUrl);
+  }
+  if (existing?.photoUrlMobile && existing.photoUrlMobile !== validated.photoUrlMobile) {
+    urlsToDelete.push(existing.photoUrlMobile);
+  }
+  if (urlsToDelete.length > 0) {
+    await deleteMultipleFromStorage(urlsToDelete);
   }
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath("/about");
+  revalidatePath("/lookbook");
 
   return { success: true, banner };
 }
@@ -81,22 +95,26 @@ export async function updateBanner(id: string, input: BannerInput) {
 export async function deleteBanner(id: string) {
   await requireAuth();
 
-  // Get banner
   const banner = await prisma.banner.findUnique({
     where: { id },
-    select: { photoUrl: true },
+    select: { photoUrl: true, photoUrlMobile: true },
   });
 
   await prisma.banner.delete({ where: { id } });
 
-  if (banner?.photoUrl) {
-    await deleteFromStorage(banner.photoUrl);
+  const urlsToDelete = [
+    banner?.photoUrl,
+    banner?.photoUrlMobile,
+  ].filter(Boolean) as string[];
+
+  if (urlsToDelete.length > 0) {
+    await deleteMultipleFromStorage(urlsToDelete);
   }
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath("/about");
+  revalidatePath("/lookbook");
 
   return { success: true };
 }

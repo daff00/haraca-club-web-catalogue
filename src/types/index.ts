@@ -71,5 +71,6 @@ export interface Banner {
   id: string;
   page: BannerPage;
   photoUrl: string;
+  photoUrlMobile: string | null;
   isActive: boolean;
 }

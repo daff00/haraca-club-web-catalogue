@@ -38,4 +38,17 @@ export async function deleteFromStorage(url: string): Promise<void> {
 
 // Delete many file from supabase storage
 export async function deleteMultipleFromStorage(urls: string[]): Promise<void> {
+  const paths = urls
+    .map(extractStoragePath)
+    .filter((p): p is string => p !== null);
+
+  if (paths.length === 0) return;
+
+  const { error } = await supabaseAdmin.storage
+    .from(STORAGE_BUCKET)
+    .remove(paths);
+
+  if (error) {
+    console.error("Failed to delete files from storage:", error.message);
+  }
 }
