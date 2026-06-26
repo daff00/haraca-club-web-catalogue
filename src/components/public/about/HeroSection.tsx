@@ -9,22 +9,24 @@ export async function HeroSection() {
     getActiveBanner("ABOUT"),
   ]);
 
-  const behindPhotos = (content?.behindPhotos as BehindPhoto[]) ?? [];
+  const behindPhotos = (content?.behindPhotos as unknown as BehindPhoto[]) ?? [];
   const heroPhoto = aboutBanner?.photoUrl ?? behindPhotos[0]?.url ?? null;
 
   return (
-    <section className="min-h-screen bg-[var(--color-dark)] flex flex-col relative overflow-hidden">
+    <section className="min-h-[85vh] md:min-h-screen bg-[var(--color-dark)] flex flex-col relative overflow-hidden">
 
       {/* Background photo */}
       {heroPhoto && (
         <>
-          <Image
-            src={heroPhoto}
-            alt="Haraca About"
-            fill
-            className="object-cover opacity-30"
-            priority
-          />
+          <div className="absolute inset-0">
+            <Image
+              src={heroPhoto}
+              alt="Haraca About"
+              fill
+              className="object-cover opacity-30"
+              priority
+            />
+          </div>
           {/* Gradient overlay — bawah lebih gelap biar teks stats terbaca */}
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)] via-[var(--color-dark)]/40 to-transparent" />
         </>

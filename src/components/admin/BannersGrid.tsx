@@ -123,7 +123,7 @@ function BannerCard({ banner }: { banner: Banner }) {
 
       <div className="border border-[var(--color-border)] rounded-card overflow-hidden bg-white">
         {/* Preview */}
-        <div className="relative aspect-[16/5] bg-[var(--color-surface)]">
+        <div className="relative aspect-[1200/518] bg-[var(--color-surface)]">
           <img
             src={banner.photoUrl}
             alt="Banner"

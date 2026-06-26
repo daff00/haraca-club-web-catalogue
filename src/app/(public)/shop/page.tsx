@@ -54,15 +54,17 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <>
       {/* ── BANNER ───────────────────────────────────────── */}
-      <section className="relative h-[400px] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
+      <section className="relative w-full aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
         {banner?.photoUrl ? (
-          <Image
-            src={banner.photoUrl}
-            alt="Shop Banner"
-            fill
-            className="object-cover opacity-40"
-            priority
-          />
+          <div className="absolute inset-0">
+            <Image
+              src={banner.photoUrl}
+              alt="Shop Banner"
+              fill
+              className="object-cover opacity-40"
+              priority
+            />
+          </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-dark)] via-[var(--color-brown-dark)] to-[var(--color-dark)]" />
         )}

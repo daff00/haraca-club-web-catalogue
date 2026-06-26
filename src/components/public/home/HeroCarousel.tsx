@@ -13,7 +13,6 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
     if (!banners || banners.length === 0) return;
     if (paused) return;
 
-    // auto-advance every 4 seconds (ideal gap)
     interval.current = window.setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
     }, 4000);
@@ -49,7 +48,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
             src={b.photoUrl}
             alt={`Banner ${i + 1}`}
             fill
-            className="object-cover object-center md:object-left"
+            className="object-cover object-center"
             priority={i === 0}
           />
         </div>

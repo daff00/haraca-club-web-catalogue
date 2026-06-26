@@ -53,6 +53,7 @@ export function BannerForm({ banner }: Props) {
     if (!validateFile(file)) return;
 
     setUploading(true);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -120,7 +121,7 @@ export function BannerForm({ banner }: Props) {
         toast.success(isEdit ? "Banner updated" : "Banner created");
         router.push("/admin/banners");
       } else {
-        toast.error(res.error || "Something went wrong");
+        toast.error("Something went wrong");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Something went wrong";
@@ -188,16 +189,15 @@ export function BannerForm({ banner }: Props) {
             </label>
             <p className="text-xs text-[var(--color-text-muted)] mb-3 flex items-center gap-1">
               <Layout size={12} />
-              Recommended ratio: 16:5 (e.g. 1280×400px)
+              Recommended ratio: 1200×518 (fixed proportion)
             </p>
-
             {photoUrl ? (
               <div className="relative group">
                 <div className="relative rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
                   <img
                     src={photoUrl}
                     alt="Banner preview"
-                    className="w-full aspect-[16/5] object-cover"
+                    className="w-full aspect-[1200/518] object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button
@@ -258,6 +258,7 @@ export function BannerForm({ banner }: Props) {
               </div>
             )}
           </div>
+
 
           {/* Active toggle */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">
