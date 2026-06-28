@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getActiveBanner } from "@/actions/banners";
 import { getBrandContent } from "@/actions/brand";
 import type { BehindPhoto } from "@/types";
+import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
 
 export async function HeroSection() {
   const [content, aboutBanner] = await Promise.all([
@@ -10,27 +11,40 @@ export async function HeroSection() {
   ]);
 
   const behindPhotos = (content?.behindPhotos as unknown as BehindPhoto[]) ?? [];
-  const heroPhoto = aboutBanner?.photoUrl ?? behindPhotos[0]?.url ?? null;
+  const heroPhoto =
+    aboutBanner?.desktopPhotoUrl ||
+    aboutBanner?.photoUrl ||
+    behindPhotos[0]?.url ||
+    null;
 
   return (
     <section className="min-h-[85vh] md:min-h-screen bg-[var(--color-dark)] flex flex-col relative overflow-hidden">
 
       {/* Background photo */}
-      {heroPhoto && (
+      {aboutBanner || heroPhoto ? (
         <>
           <div className="absolute inset-0">
-            <Image
-              src={heroPhoto}
-              alt="Haraca About"
-              fill
-              className="object-cover opacity-30"
-              priority
-            />
+            {aboutBanner ? (
+              <ResponsiveBanner
+                banner={aboutBanner}
+                alt="Haraca About"
+                className="object-cover opacity-30"
+                priority
+              />
+            ) : (
+              <Image
+                src={heroPhoto!}
+                alt="Haraca About"
+                fill
+                className="object-cover opacity-30"
+                priority
+              />
+            )}
           </div>
           {/* Gradient overlay — bawah lebih gelap biar teks stats terbaca */}
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)] via-[var(--color-dark)]/40 to-transparent" />
         </>
-      )}
+      ) : null}
 
       {/* Decorative grain texture */}
       <div

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getProducts } from "@/actions/products";
 import { getActiveBanner } from "@/actions/banners";
 import { ProductCard } from "@/components/public/ProductCard";
@@ -6,6 +5,7 @@ import { CategoryTabs } from "@/components/public/shop/CategoryTabs";
 import { ShopFilterBar } from "@/components/public/shop/ShopFilterBar";
 import { ShopPagination } from "@/components/public/shop/ShopPagination";
 import { PlaceholderImage } from "@/components/public/PlaceholderImage";
+import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
 
 export const metadata = {
   title: "Shop",
@@ -54,13 +54,12 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <>
       {/* ── BANNER ───────────────────────────────────────── */}
-      <section className="relative w-full aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
-        {banner?.photoUrl ? (
+      <section className="relative w-full aspect-[9/16] md:aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
+        {banner ? (
           <div className="absolute inset-0">
-            <Image
-              src={banner.photoUrl}
+            <ResponsiveBanner
+              banner={banner}
               alt="Shop Banner"
-              fill
               className="object-cover opacity-40"
               priority
             />

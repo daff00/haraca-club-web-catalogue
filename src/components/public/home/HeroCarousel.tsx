@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { Banner } from "@/types";
+import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
 
 export function HeroCarousel({ banners }: { banners: Banner[] }) {
   const [index, setIndex] = useState(0);
@@ -44,10 +44,9 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
             i === index ? "opacity-100 z-0" : "opacity-0 z-0"
           }`}
         >
-          <Image
-            src={b.photoUrl}
+          <ResponsiveBanner
+            banner={b}
             alt={`Banner ${i + 1}`}
-            fill
             className="object-cover object-center"
             priority={i === 0}
           />

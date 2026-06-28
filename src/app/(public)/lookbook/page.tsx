@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { getLookbookPhotos } from "@/actions/lookbooks";
 import { getActiveBanner } from "@/actions/banners";
 import { LookbookGrid } from "@/components/public/lookbook/LookbookGrid";
 import { LookbookCategoryTabs } from "@/components/public/lookbook/LookbookCategoryTabs";
+import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
 
 export const metadata = {
   title: "Lookbook",
@@ -23,13 +23,12 @@ export default async function LookbookPage({ searchParams }: Props) {
   return (
     <>
       {/* ── BANNER ───────────────────────────────────────── */}
-      <section className="relative w-full aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-dark)]">
-        {banner?.photoUrl ? (
+      <section className="relative w-full aspect-[9/16] md:aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-dark)]">
+        {banner ? (
           <div className="absolute inset-0">
-            <Image
-              src={banner.photoUrl}
+            <ResponsiveBanner
+              banner={banner}
               alt="Lookbook Banner"
-              fill
               className="object-cover opacity-50"
               priority
             />
