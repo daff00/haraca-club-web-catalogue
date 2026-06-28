@@ -103,7 +103,7 @@ describe("ProductForm", () => {
         "Color name (e.g. Black)",
       );
       fireEvent.change(colorNameInput, { target: { value: "Red" } });
-      fireEvent.click(screen.getByRole("button", { name: "Add Color" }));
+      fireEvent.click(screen.getByRole("button", { name: /add$/i }));
       expect(screen.getByText("Red")).toBeInTheDocument();
     });
 
@@ -113,7 +113,7 @@ describe("ProductForm", () => {
         "Color name (e.g. Black)",
       );
       fireEvent.change(colorNameInput, { target: { value: "Red" } });
-      fireEvent.click(screen.getByRole("button", { name: "Add Color" }));
+      fireEvent.click(screen.getByRole("button", { name: /add$/i }));
       expect(screen.getByText("Red")).toBeInTheDocument();
 
       fireEvent.click(screen.getByRole("button", { name: "×" }));

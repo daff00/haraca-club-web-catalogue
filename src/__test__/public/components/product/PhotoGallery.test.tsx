@@ -30,15 +30,20 @@ describe("PhotoGallery", () => {
     expect(images).toHaveLength(1);
   });
 
+  const getThumbnails = () =>
+    screen
+      .getAllByRole("button")
+      .filter((element) => !element.getAttribute("aria-label"));
+
   it("renders thumbnails when multiple photos", () => {
     render(<PhotoGallery photos={mockPhotos} productName="Test Product" />);
-    const thumbnails = screen.getAllByRole("button");
+    const thumbnails = getThumbnails();
     expect(thumbnails).toHaveLength(mockPhotos.length);
   });
 
   it("changes main photo when thumbnail clicked", () => {
     render(<PhotoGallery photos={mockPhotos} productName="Test Product" />);
-    const thumbnails = screen.getAllByRole("button");
+    const thumbnails = getThumbnails();
     fireEvent.click(thumbnails[1]);
 
     const images = screen.getAllByRole("img");

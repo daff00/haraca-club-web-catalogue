@@ -34,6 +34,8 @@ const mockBanner = {
   id: "1",
   page: "HOME" as const,
   photoUrl: "https://example.com/banner.jpg",
+  desktopPhotoUrl: "https://example.com/desktop-banner.jpg",
+  mobilePhotoUrl: "https://example.com/mobile-banner.jpg",
   isActive: true,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -160,13 +162,36 @@ describe("Banner Actions", () => {
         })
       );
     });
+
+    it("creates a banner with desktop and mobile urls", async () => {
+      const createdBanner = { ...mockBanner, page: "SHOP" as const };
+      (prisma.banner.create as jest.Mock).mockResolvedValue(createdBanner);
+
+      const result = await banners.createBanner({
+        page: "SHOP",
+        photoUrl: "https://example.com/desktop-banner.jpg",
+        desktopPhotoUrl: "https://example.com/desktop-banner.jpg",
+        mobilePhotoUrl: "https://example.com/mobile-banner.jpg",
+        isActive: false,
+      });
+
+      expect(result.success).toBe(true);
+      expect(prisma.banner.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            page: "SHOP",
+            desktopPhotoUrl: "https://example.com/desktop-banner.jpg",
+            mobilePhotoUrl: "https://example.com/mobile-banner.jpg",
+          }),
+        })
+      );
+    });
   });
 
   describe("updateBanner", () => {
-    it("deactivates other banners when setting active (HOME)", async () => {
+    it("does not deactivate other HOME banners when setting active", async () => {
       (prisma.banner.findUnique as jest.Mock).mockResolvedValue(mockBanner);
       (prisma.banner.update as jest.Mock).mockResolvedValue(mockBanner);
-      (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
 
       await banners.updateBanner("1", {
         page: "HOME",
@@ -174,8 +199,28 @@ describe("Banner Actions", () => {
         isActive: true,
       });
 
+      expect(prisma.banner.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("deactivates other SHOP banners when setting active", async () => {
+      (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "SHOP",
+      });
+      (prisma.banner.update as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        page: "SHOP",
+      });
+      (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
+
+      await banners.updateBanner("1", {
+        page: "SHOP",
+        photoUrl: "https://example.com/shop-banner.jpg",
+        isActive: true,
+      });
+
       expect(prisma.banner.updateMany).toHaveBeenCalledWith({
-        where: { page: "HOME", id: { not: "1" } },
+        where: { page: "SHOP", id: { not: "1" } },
         data: { isActive: false },
       });
     });
@@ -199,7 +244,7 @@ describe("Banner Actions", () => {
       expect(prisma.banner.updateMany).not.toHaveBeenCalled();
     });
 
-    it("deletes old photo from storage when photo changed", async () => {
+    it("deletes old photo url from storage when photo changed", async () => {
       const oldUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old-banner.jpg";
       const newUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/new-banner.jpg";
       (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
@@ -212,17 +257,49 @@ describe("Banner Actions", () => {
       await banners.updateBanner("1", {
         page: "HOME",
         photoUrl: newUrl,
+        desktopPhotoUrl: mockBanner.desktopPhotoUrl,
+        mobilePhotoUrl: mockBanner.mobilePhotoUrl,
         isActive: false,
       });
 
-      expect(supabaseLib.deleteFromStorage).toHaveBeenCalledWith(oldUrl);
+      expect(supabaseLib.deleteMultipleFromStorage).toHaveBeenCalledWith([oldUrl]);
     });
 
-    it("does not delete storage when photo unchanged", async () => {
+    it("deletes old desktop and mobile urls when changed", async () => {
+      const oldDesktopUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old-desktop.jpg";
+      const oldMobileUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/old-mobile.jpg";
+      const newDesktopUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/new-desktop.jpg";
+      const newMobileUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/new-mobile.jpg";
+
+      (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
+        ...mockBanner,
+        desktopPhotoUrl: oldDesktopUrl,
+        mobilePhotoUrl: oldMobileUrl,
+      });
+      (prisma.banner.update as jest.Mock).mockResolvedValue(mockBanner);
+      (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
+
+      await banners.updateBanner("1", {
+        page: "HOME",
+        photoUrl: mockBanner.photoUrl,
+        desktopPhotoUrl: newDesktopUrl,
+        mobilePhotoUrl: newMobileUrl,
+        isActive: false,
+      });
+
+      expect(supabaseLib.deleteMultipleFromStorage).toHaveBeenCalledWith([
+        oldDesktopUrl,
+        oldMobileUrl,
+      ]);
+    });
+
+    it("does not delete storage when photo urls are unchanged", async () => {
       const sameUrl = "https://xxx.supabase.co/storage/v1/object/public/haraca-media/same.jpg";
       (prisma.banner.findUnique as jest.Mock).mockResolvedValue({
         ...mockBanner,
         photoUrl: sameUrl,
+        desktopPhotoUrl: sameUrl,
+        mobilePhotoUrl: sameUrl,
       });
       (prisma.banner.update as jest.Mock).mockResolvedValue(mockBanner);
       (prisma.banner.updateMany as jest.Mock).mockResolvedValue({ count: 0 });
@@ -230,10 +307,12 @@ describe("Banner Actions", () => {
       await banners.updateBanner("1", {
         page: "HOME",
         photoUrl: sameUrl,
+        desktopPhotoUrl: sameUrl,
+        mobilePhotoUrl: sameUrl,
         isActive: false,
       });
 
-      expect(supabaseLib.deleteFromStorage).not.toHaveBeenCalled();
+      expect(supabaseLib.deleteMultipleFromStorage).not.toHaveBeenCalled();
     });
 
     // --- NEW: LOOKBOOK deactivates others ---
@@ -295,12 +374,16 @@ describe("Banner Actions", () => {
       expect(prisma.banner.delete).toHaveBeenCalledWith({ where: { id: "1" } });
     });
 
-    it("deletes banner photo from storage", async () => {
+    it("deletes banner storage urls when deleting banner", async () => {
       (prisma.banner.findUnique as jest.Mock).mockResolvedValue(mockBanner);
       (prisma.banner.delete as jest.Mock).mockResolvedValue(mockBanner);
 
       await banners.deleteBanner("1");
-      expect(supabaseLib.deleteFromStorage).toHaveBeenCalledWith(mockBanner.photoUrl);
+      expect(supabaseLib.deleteMultipleFromStorage).toHaveBeenCalledWith([
+        mockBanner.photoUrl,
+        mockBanner.desktopPhotoUrl,
+        mockBanner.mobilePhotoUrl,
+      ]);
     });
   });
 });
