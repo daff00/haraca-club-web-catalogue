@@ -30,12 +30,16 @@ export function BannerForm({ banner }: Props) {
   const isEdit = !!banner;
 
   const [page, setPage] = useState<BannerPage>(banner?.page ?? "HOME");
-  const [photoUrl, setPhotoUrl] = useState(banner?.photoUrl ?? "");
+  const [desktopPhotoUrl, setDesktopPhotoUrl] = useState(
+    banner?.desktopPhotoUrl ?? banner?.photoUrl ?? "",
+  );
+  const [mobilePhotoUrl, setMobilePhotoUrl] = useState(banner?.mobilePhotoUrl ?? "");
   const [isActive, setIsActive] = useState(banner?.isActive ?? false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActiveTarget, setDragActiveTarget] = useState<"desktop" | "mobile" | null>(null);
+  const desktopFileInputRef = useRef<HTMLInputElement>(null);
+  const mobileFileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): boolean => {
     if (file.size > MAX_FILE_SIZE) {
@@ -49,7 +53,7 @@ export function BannerForm({ banner }: Props) {
     return true;
   };
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File, target: "desktop" | "mobile") => {
     if (!validateFile(file)) return;
 
     setUploading(true);
@@ -62,7 +66,11 @@ export function BannerForm({ banner }: Props) {
       const data = await res.json();
 
       if (data.url) {
-        setPhotoUrl(data.url);
+        if (target === "desktop") {
+          setDesktopPhotoUrl(data.url);
+        } else {
+          setMobilePhotoUrl(data.url);
+        }
         toast.success("Photo uploaded successfully");
       } else {
         toast.error(data.error || "Upload failed");
@@ -71,47 +79,65 @@ export function BannerForm({ banner }: Props) {
       toast.error("Upload failed");
     } finally {
       setUploading(false);
+      setDragActiveTarget(null);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    target: "desktop" | "mobile",
+  ) => {
     const file = e.target.files?.[0];
-    if (file) uploadFile(file);
+    if (file) uploadFile(file, target);
   };
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
+  const handleDrag = useCallback((e: React.DragEvent, target: "desktop" | "mobile") => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
+      setDragActiveTarget(target);
     } else if (e.type === "dragleave") {
-      setDragActive(false);
+      setDragActiveTarget(null);
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) uploadFile(file);
-  }, []);
+  const handleDrop = useCallback(
+    (e: React.DragEvent, target: "desktop" | "mobile") => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActiveTarget(null);
+      const file = e.dataTransfer.files?.[0];
+      if (file) uploadFile(file, target);
+    },
+    [],
+  );
 
-  const removePhoto = () => {
-    setPhotoUrl("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const removePhoto = (target: "desktop" | "mobile") => {
+    if (target === "desktop") {
+      setDesktopPhotoUrl("");
+      if (desktopFileInputRef.current) desktopFileInputRef.current.value = "";
+    } else {
+      setMobilePhotoUrl("");
+      if (mobileFileInputRef.current) mobileFileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!photoUrl) {
-      toast.error("Please upload a banner photo first");
+    if (!desktopPhotoUrl) {
+      toast.error("Please upload a desktop banner photo first");
       return;
     }
 
     setSaving(true);
     try {
-      const input = { page, photoUrl, isActive };
+      const input = {
+        page,
+        photoUrl: desktopPhotoUrl,
+        desktopPhotoUrl,
+        mobilePhotoUrl,
+        isActive,
+      };
 
       const res = isEdit
         ? await updateBanner(banner.id, input)
@@ -183,82 +209,157 @@ export function BannerForm({ banner }: Props) {
           </div>
 
           {/* Photo upload */}
-          <div>
-            <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
-              Banner Photo <span className="text-red-500">*</span>
-            </label>
-            <p className="text-xs text-[var(--color-text-muted)] mb-3 flex items-center gap-1">
-              <Layout size={12} />
-              Recommended ratio: 1200×518 (fixed proportion)
-            </p>
-            {photoUrl ? (
-              <div className="relative group">
-                <div className="relative rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
-                  <img
-                    src={photoUrl}
-                    alt="Banner preview"
-                    className="w-full aspect-[1200/518] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={removePhoto}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors shadow-sm"
-                    >
-                      <X size={16} />
-                    </button>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                Desktop Banner <span className="text-red-500">*</span>
+              </label>
+              <p className="text-xs text-[var(--color-text-muted)] mb-3">
+                Recommended: 1200×518
+              </p>
+              {desktopPhotoUrl ? (
+                <div className="relative group">
+                  <div className="relative rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
+                    <img
+                      src={desktopPhotoUrl}
+                      alt="Desktop banner preview"
+                      className="w-full aspect-[1200/518] object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => removePhoto("desktop")}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors shadow-sm"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
                   </div>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-2 text-center">
+                    Hover to remove • Desktop banner will be used for larger screens
+                  </p>
                 </div>
-                <p className="text-xs text-[var(--color-text-muted)] mt-2 text-center">
-                  Hover to remove • This banner will be displayed on the selected page
-                </p>
-              </div>
-            ) : (
-              <div
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-                className={`
-                  border-2 border-dashed rounded-[var(--radius-card)] p-8 text-center cursor-pointer
-                  transition-all duration-200
-                  ${
-                    dragActive
-                      ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
-                      : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
-                  }
-                  ${uploading ? "opacity-60 pointer-events-none" : ""}
-                `}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {uploading ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm text-[var(--color-text)]">Uploading...</p>
-                  </div>
-                ) : (
-                  <>
-                    <Upload size={32} className="mx-auto text-[var(--color-text-muted)]" />
-                    <p className="text-sm text-[var(--color-text)] mt-2">
-                      Click or drag to upload banner photo
-                    </p>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                      JPEG, PNG, WEBP • Max 2MB • Recommended 1280×400px
-                    </p>
-                  </>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  disabled={uploading}
-                />
-              </div>
-            )}
-          </div>
+              ) : (
+                <div
+                  onDragEnter={(e) => handleDrag(e, "desktop")}
+                  onDragLeave={(e) => handleDrag(e, "desktop")}
+                  onDragOver={(e) => handleDrag(e, "desktop")}
+                  onDrop={(e) => handleDrop(e, "desktop")}
+                  className={`
+                    border-2 border-dashed rounded-[var(--radius-card)] p-8 text-center cursor-pointer
+                    transition-all duration-200
+                    ${
+                      dragActiveTarget === "desktop"
+                        ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
+                        : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
+                    }
+                    ${uploading ? "opacity-60 pointer-events-none" : ""}
+                  `}
+                  onClick={() => desktopFileInputRef.current?.click()}
+                >
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm text-[var(--color-text)]">Uploading...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload size={32} className="mx-auto text-[var(--color-text-muted)]" />
+                      <p className="text-sm text-[var(--color-text)] mt-2">
+                        Click or drag to upload desktop banner
+                      </p>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                        JPEG, PNG, WEBP • Max 2MB
+                      </p>
+                    </>
+                  )}
+                  <input
+                    ref={desktopFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, "desktop")}
+                    disabled={uploading}
+                  />
+                </div>
+              )}
+            </div>
 
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text)] mb-1.5">
+                Mobile Banner
+              </label>
+              <p className="text-xs text-[var(--color-text-muted)] mb-3">
+                Recommended: 720×1280
+              </p>
+              {mobilePhotoUrl ? (
+                <div className="relative group">
+                  <div className="relative rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)]">
+                    <img
+                      src={mobilePhotoUrl}
+                      alt="Mobile banner preview"
+                      className="w-full aspect-[9/16] object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => removePhoto("mobile")}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors shadow-sm"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-2 text-center">
+                    Hover to remove • Mobile banner will be used for small screens
+                  </p>
+                </div>
+              ) : (
+                <div
+                  onDragEnter={(e) => handleDrag(e, "mobile")}
+                  onDragLeave={(e) => handleDrag(e, "mobile")}
+                  onDragOver={(e) => handleDrag(e, "mobile")}
+                  onDrop={(e) => handleDrop(e, "mobile")}
+                  className={`
+                    border-2 border-dashed rounded-[var(--radius-card)] p-8 text-center cursor-pointer
+                    transition-all duration-200
+                    ${
+                      dragActiveTarget === "mobile"
+                        ? "border-[var(--color-accent)] bg-[var(--color-surface-alt)]"
+                        : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-accent)]"
+                    }
+                    ${uploading ? "opacity-60 pointer-events-none" : ""}
+                  `}
+                  onClick={() => mobileFileInputRef.current?.click()}
+                >
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm text-[var(--color-text)]">Uploading...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload size={32} className="mx-auto text-[var(--color-text-muted)]" />
+                      <p className="text-sm text-[var(--color-text)] mt-2">
+                        Click or drag to upload mobile banner
+                      </p>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                        JPEG, PNG, WEBP • Max 2MB
+                      </p>
+                    </>
+                  )}
+                  <input
+                    ref={mobileFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, "mobile")}
+                    disabled={uploading}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Active toggle */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">

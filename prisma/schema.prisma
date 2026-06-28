@@ -92,12 +92,14 @@ model Testimonial {
 }
 
 model Banner {
-  id        String     @id @default(cuid())
-  page      BannerPage
-  photoUrl  String
-  isActive  Boolean    @default(false)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id              String     @id @default(cuid())
+  page            BannerPage
+  photoUrl        String
+  desktopPhotoUrl String?
+  mobilePhotoUrl  String?
+  isActive        Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @default(now())
 }
 
 model BrandContent {

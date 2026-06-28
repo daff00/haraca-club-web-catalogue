@@ -41,6 +41,8 @@ export const TestimonialSchema = z.object({
 export const BannerSchema = z.object({
   page: z.enum(["HOME", "SHOP", "LOOKBOOK", "ABOUT"]),
   photoUrl: z.string().url(),
+  desktopPhotoUrl: z.string().url().optional().or(z.literal("")),
+  mobilePhotoUrl: z.string().url().optional().or(z.literal("")),
   isActive: z.boolean().default(false),
 });
 

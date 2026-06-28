@@ -54,10 +54,14 @@ export async function updateBanner(id: string, input: BannerInput) {
 
   const existing = await prisma.banner.findUnique({
     where: { id },
-    select: { photoUrl: true },
+    select: {
+      photoUrl: true,
+      desktopPhotoUrl: true,
+      mobilePhotoUrl: true,
+    },
   });
 
-  if (validated.isActive) {
+  if (validated.isActive && validated.page !== "HOME") {
     await prisma.banner.updateMany({
       where: { page: validated.page, id: { not: id } },
       data: { isActive: false },
@@ -73,6 +77,18 @@ export async function updateBanner(id: string, input: BannerInput) {
   const urlsToDelete: string[] = [];
   if (existing?.photoUrl && existing.photoUrl !== validated.photoUrl) {
     urlsToDelete.push(existing.photoUrl);
+  }
+  if (
+    existing?.desktopPhotoUrl &&
+    existing.desktopPhotoUrl !== validated.desktopPhotoUrl
+  ) {
+    urlsToDelete.push(existing.desktopPhotoUrl);
+  }
+  if (
+    existing?.mobilePhotoUrl &&
+    existing.mobilePhotoUrl !== validated.mobilePhotoUrl
+  ) {
+    urlsToDelete.push(existing.mobilePhotoUrl);
   }
   if (urlsToDelete.length > 0) {
     await deleteMultipleFromStorage(urlsToDelete);
@@ -91,12 +107,20 @@ export async function deleteBanner(id: string) {
 
   const banner = await prisma.banner.findUnique({
     where: { id },
-    select: { photoUrl: true },
+    select: {
+      photoUrl: true,
+      desktopPhotoUrl: true,
+      mobilePhotoUrl: true,
+    },
   });
 
   await prisma.banner.delete({ where: { id } });
 
-  const urlsToDelete = [banner?.photoUrl].filter(Boolean) as string[];
+  const urlsToDelete = [
+    banner?.photoUrl,
+    banner?.desktopPhotoUrl,
+    banner?.mobilePhotoUrl,
+  ].filter(Boolean) as string[];
 
   if (urlsToDelete.length > 0) {
     await deleteMultipleFromStorage(urlsToDelete);
