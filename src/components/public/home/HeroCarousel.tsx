@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Banner } from "@/types";
 import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
+import Link from "next/link";
 
 export function HeroCarousel({ banners }: { banners: Banner[] }) {
   const [index, setIndex] = useState(0);
@@ -40,9 +41,8 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
       {banners.map((b, i) => (
         <div
           key={b.id}
-          className={`absolute inset-0 transition-opacity duration-700 ${
-            i === index ? "opacity-100 z-0" : "opacity-0 z-0"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100 z-0" : "opacity-0 z-0"
+            }`}
         >
           <ResponsiveBanner
             banner={b}
@@ -54,7 +54,11 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
       ))}
 
       {/* Dark overlay to improve text legibility */}
-      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+
+      <Link
+        href="/shop"
+        className="absolute inset-0 z-10 bg-black/15"
+      />
 
       {/* Indicators only (arrows removed) */}
       {banners.length > 1 && (
