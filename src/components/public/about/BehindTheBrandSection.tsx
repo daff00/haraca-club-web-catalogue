@@ -36,21 +36,24 @@ export function BehindTheBrandSection({ photos }: Props) {
             const offset = i % 2 !== 0 ? "md:mt-12" : "";
 
             return (
-                <div key={i} className={`relative group ${offset}`}>
-                  <div className="aspect-square overflow-hidden bg-[var(--color-border)]">
+              <div
+                key={i}
+                className={`relative group ${offset} rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-sm ring-1 ring-[var(--color-border)]/50 transition-transform duration-300 hover:-translate-y-0.5`}
+              >
+                <div className="aspect-[3/2] overflow-hidden rounded-[var(--radius-card)] bg-[var(--color-surface)]">
                   {photo?.url ? (
                     <Image
                       src={photo.url}
                       alt={caption}
                       fill
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                      className="object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-700"
                       sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="w-full h-full bg-[var(--color-border)]" />
                   )}
                 </div>
-                <div className="mt-3">
+                <div className="mt-3 px-3 pb-3">
                   <p className="font-sans text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
                     {caption}
                   </p>

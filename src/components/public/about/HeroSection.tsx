@@ -1,48 +1,25 @@
-import Image from "next/image";
 import { getActiveBanner } from "@/actions/banners";
-import { getBrandContent } from "@/actions/brand";
-import type { BehindPhoto } from "@/types";
 import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
 
 export async function HeroSection() {
-  const [content, aboutBanner] = await Promise.all([
-    getBrandContent(),
-    getActiveBanner("ABOUT"),
-  ]);
-
-  const behindPhotos = (content?.behindPhotos as unknown as BehindPhoto[]) ?? [];
-  const heroPhoto =
-    aboutBanner?.desktopPhotoUrl ||
-    aboutBanner?.photoUrl ||
-    behindPhotos[0]?.url ||
-    null;
+  const aboutBanner = await getActiveBanner("ABOUT");
 
   return (
     <section className="min-h-[85vh] md:min-h-screen bg-[var(--color-dark)] flex flex-col relative overflow-hidden">
 
       {/* Background photo */}
-      {aboutBanner || heroPhoto ? (
+      {aboutBanner ? (
         <>
           <div className="absolute inset-0">
-            {aboutBanner ? (
-              <ResponsiveBanner
-                banner={aboutBanner}
-                alt="Haraca About"
-                className="object-cover opacity-30"
-                priority
-              />
-            ) : (
-              <Image
-                src={heroPhoto!}
-                alt="Haraca About"
-                fill
-                className="object-cover opacity-30"
-                priority
-              />
-            )}
+            <ResponsiveBanner
+              banner={aboutBanner}
+              alt="Haraca About"
+              className="object-cover opacity-40"
+              priority
+            />
           </div>
-          {/* Gradient overlay — bawah lebih gelap biar teks stats terbaca */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)] via-[var(--color-dark)]/40 to-transparent" />
+          {/* Gradient overlay — buat teks lebih mudah dibaca */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)] via-[var(--color-dark)]/20 to-transparent" />
         </>
       ) : null}
 
@@ -55,16 +32,16 @@ export async function HeroSection() {
       />
 
       {/* Top — teks besar */}
-      <div className="relative z-10 flex-1 flex items-end pb-16 pt-32">
+      <div className="relative z-10 flex-1 flex items-end pb-16 pt-24">
         <div className="content-wrapper w-full">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
 
             <div>
               {/* Label */}
               <p className="font-sans text-xs uppercase tracking-[0.3em] text-[var(--color-accent)] mb-6">
                 Our Story
               </p>
-              <h1 className="font-display text-[72px] md:text-[96px] leading-[0.95] font-medium text-[var(--color-bg)] max-w-2xl">
+              <h1 className="font-display text-[56px] md:text-[72px] leading-[0.95] font-semibold text-[var(--color-bg)] max-w-2xl">
                 Wear It
                 <br />
                 <span className="italic text-[var(--color-accent)]">Simply.</span>

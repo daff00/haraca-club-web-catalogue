@@ -8,25 +8,47 @@ import Link from "next/link";
 export function HeroCarousel({ banners }: { banners: Banner[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const interval = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!banners || banners.length === 0) return;
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(mobileQuery.matches);
+
+    update();
+    mobileQuery.addEventListener("change", update);
+
+    return () => mobileQuery.removeEventListener("change", update);
+  }, []);
+
+  const visibleBanners = banners && banners.length > 0
+    ? isMobile
+      ? (() => {
+          const mobileOnly = banners.filter((banner) => Boolean(banner.mobilePhotoUrl));
+          if (mobileOnly.length === 1) return mobileOnly;
+          if (mobileOnly.length > 0) return mobileOnly;
+          return banners;
+        })()
+      : banners
+    : [];
+
+  useEffect(() => {
+    if (!visibleBanners || visibleBanners.length === 0) return;
     if (paused) return;
 
     interval.current = window.setInterval(() => {
-      setIndex((i) => (i + 1) % banners.length);
+      setIndex((i) => (i + 1) % visibleBanners.length);
     }, 4000);
 
     return () => {
       if (interval.current) window.clearInterval(interval.current);
     };
-  }, [banners, paused]);
+  }, [visibleBanners, paused]);
 
   useEffect(() => {
-    // reset index if banners change
+    // reset index if visible banners change
     setIndex(0);
-  }, [banners]);
+  }, [visibleBanners]);
 
   if (!banners || banners.length === 0) {
     return <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-dark)] via-[#2a1f14] to-[var(--color-dark)]" />;
@@ -38,7 +60,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {banners.map((b, i) => (
+      {visibleBanners.map((b, i) => (
         <div
           key={b.id}
           className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100 z-0" : "opacity-0 z-0"
