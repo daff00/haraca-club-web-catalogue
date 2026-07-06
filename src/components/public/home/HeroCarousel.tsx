@@ -57,7 +57,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
 
       <Link
         href="/shop"
-        className="absolute inset-0 z-10 bg-black/15"
+        className="absolute inset-0 z-10 bg-black/[0.3]"
       />
 
       {/* Indicators only (arrows removed) */}

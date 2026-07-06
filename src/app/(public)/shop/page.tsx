@@ -60,18 +60,23 @@ export default async function ShopPage({ searchParams }: Props) {
             <ResponsiveBanner
               banner={banner}
               alt="Shop Banner"
-              className="object-cover opacity-40"
+              className="object-cover"
               priority
             />
+
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/70 to-black/65" />
           </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-dark)] via-[var(--color-brown-dark)] to-[var(--color-dark)]" />
         )}
+
         <div className="relative z-10 text-center px-6">
-          <h1 className="font-display text-[64px] leading-[1.1] font-medium text-[var(--color-bg)] mb-4">
+          <h1 className="font-display text-[64px] leading-[1.1] font-medium text-[var(--color-bg)] mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
             Shop All
           </h1>
-          <p className="font-sans text-sm uppercase tracking-widest text-[var(--color-accent)]">
+
+          <p className="font-sans text-sm uppercase tracking-widest text-[var(--color-accent)] drop-shadow-md">
             Thoughtfully made essentials for the modern wardrobe
           </p>
         </div>
