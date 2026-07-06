@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { ProductSchema, type ProductInput } from "@/lib/validations";
+import type { Product } from "@/types";
 import slugify from "slugify";
 import { deleteMultipleFromStorage } from "@/lib/supabase";
 
@@ -12,6 +13,28 @@ import { getSession } from "@/lib/auth";
 async function requireAuth() {
   const session = await getSession();
   if (!session) throw new Error("Unauthorized");
+}
+
+type ProductFilters = {
+  category?: string;
+  isActive?: boolean;
+  label?: string;
+  search?: string;
+  sizes?: string;
+};
+
+function buildProductWhere(filters?: ProductFilters) {
+  return {
+    ...(filters?.category && { category: filters.category as any }),
+    ...(filters?.isActive !== undefined && { isActive: filters.isActive }),
+    ...(filters?.label && { labels: { has: filters.label as any } }),
+    ...(filters?.search && {
+      name: { contains: filters.search, mode: "insensitive" as any },
+    }),
+    ...(filters?.sizes && {
+      sizes: { hasSome: filters.sizes.split(",") },
+    }),
+  };
 }
 
 // CREATE
@@ -50,7 +73,7 @@ export async function getProducts(filters?: {
   sort?: string;
   page?: number;
   limit?: number;
-}) {
+}): Promise<{ products: Product[]; total: number; page: number; totalPages: number }> {
   const page = filters?.page ?? 1;
   const limit = filters?.limit ?? 20;
   const skip = (page - 1) * limit;
@@ -65,17 +88,7 @@ export async function getProducts(filters?: {
     }
   })();
 
-  const where = {
-    ...(filters?.category && { category: filters.category as any }),
-    ...(filters?.isActive !== undefined && { isActive: filters.isActive }),
-    ...(filters?.label && { labels: { has: filters.label as any } }),
-    ...(filters?.search && {
-      name: { contains: filters.search, mode: "insensitive" as any },
-    }),
-    ...(filters?.sizes && {
-      sizes: { hasSome: filters.sizes.split(",") },
-    }),
-  };
+  const where = buildProductWhere(filters);
 
   const [products, total] = await Promise.all([
     prisma.product.findMany({
@@ -87,12 +100,113 @@ export async function getProducts(filters?: {
     prisma.product.count({ where }),
   ]);
 
+  const normalizedProducts = products.map((product) => ({
+    ...product,
+    colors: (product.colors ?? []) as Product["colors"],
+    linkShopee: product.linkShopee ?? "",
+    linkTiktok: product.linkTiktok ?? "",
+  }));
+
   return {
-    products,
+    products: normalizedProducts,
     total,
     page,
     totalPages: Math.ceil(total / limit),
   };
+}
+
+export async function bulkUpdateProducts({
+  ids,
+  filters,
+  selectAllMatching,
+  updates,
+}: {
+  ids?: string[];
+  filters?: ProductFilters;
+  selectAllMatching?: boolean;
+  updates: {
+    price?: number;
+    isActive?: boolean;
+    labels?: string[];
+    sizes?: string[];
+    linkShopee?: string;
+    linkTiktok?: string;
+  };
+}) {
+  await requireAuth();
+
+  const where = selectAllMatching
+    ? buildProductWhere(filters)
+    : ids && ids.length > 0
+    ? { id: { in: ids } }
+    : undefined;
+
+  if (!where) {
+    return { success: false, message: "No products selected." };
+  }
+
+  const data: Record<string, unknown> = {};
+
+  if (updates.price !== undefined) data.price = updates.price;
+  if (updates.isActive !== undefined) data.isActive = updates.isActive;
+  if (updates.labels && updates.labels.length > 0) data.labels = updates.labels;
+  if (updates.sizes && updates.sizes.length > 0) data.sizes = updates.sizes;
+  if (updates.linkShopee !== undefined) data.linkShopee = updates.linkShopee;
+  if (updates.linkTiktok !== undefined) data.linkTiktok = updates.linkTiktok;
+
+  if (Object.keys(data).length === 0) {
+    return { success: false, message: "No changes provided." };
+  }
+
+  await prisma.product.updateMany({ where, data });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+
+  return { success: true };
+}
+
+export async function bulkDeleteProducts({
+  ids,
+  filters,
+  selectAllMatching,
+}: {
+  ids?: string[];
+  filters?: ProductFilters;
+  selectAllMatching?: boolean;
+}) {
+  await requireAuth();
+
+  const where = selectAllMatching
+    ? buildProductWhere(filters)
+    : ids && ids.length > 0
+    ? { id: { in: ids } }
+    : undefined;
+
+  if (!where) {
+    return { success: false, message: "No products selected." };
+  }
+
+  const products = await prisma.product.findMany({
+    where,
+    select: { id: true, photos: true },
+  });
+
+  const idsToDelete = products.map((product) => product.id);
+  const photoUrls = products.flatMap((product) => product.photos || []);
+
+  if (idsToDelete.length > 0) {
+    await prisma.product.deleteMany({ where: { id: { in: idsToDelete } } });
+  }
+
+  if (photoUrls.length > 0) {
+    await deleteMultipleFromStorage(photoUrls);
+  }
+
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+
+  return { success: true, deletedCount: idsToDelete.length };
 }
 
 // ─── READ ONE ─────────────────────────────────────────

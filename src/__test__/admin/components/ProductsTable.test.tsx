@@ -4,6 +4,8 @@ import { toggleProductActive, deleteProduct } from "@/actions/products";
 import { toast } from "sonner";
 
 jest.mock("@/actions/products", () => ({
+  bulkDeleteProducts: jest.fn(),
+  bulkUpdateProducts: jest.fn(),
   toggleProductActive: jest.fn(),
   deleteProduct: jest.fn(),
 }));
@@ -14,6 +16,7 @@ jest.mock("sonner", () => ({
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn(), refresh: jest.fn() }),
+  useSearchParams: () => ({ get: jest.fn(() => null) }),
 }));
 
 // Fix: mock ConfirmDialog supaya tidak pakai portal

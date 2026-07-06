@@ -60,7 +60,7 @@ export default async function ProductsPage({ searchParams }: Props) {
 
         {/* Product Table */}
         <div className="bg-[var(--color-bg)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-sm overflow-hidden">
-          <ProductsTable products={products} />
+          <ProductsTable products={products} total={total} />
         </div>
 
         {/* Pagination */}
