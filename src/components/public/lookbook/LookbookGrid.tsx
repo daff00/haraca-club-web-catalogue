@@ -21,12 +21,12 @@ export function LookbookGrid({ photos }: Props) {
 
   return (
     <>
-      {/* Masonry grid */}
-      <div className="columns-2 md:columns-3 gap-6">
+      {/* Grid layout */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {photos.map((photo) => (
           <div
             key={photo.id}
-            className="break-inside-avoid mb-6 cursor-pointer group"
+            className="cursor-pointer group"
             onClick={() => setSelected(photo)}
           >
             {/* Photo */}
