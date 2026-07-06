@@ -14,38 +14,28 @@ interface Props {
 export function ResponsiveBanner({ banner, alt, className, priority }: Props) {
   const desktopSrc = banner.desktopPhotoUrl || banner.photoUrl;
   const mobileSrc = banner.mobilePhotoUrl || desktopSrc;
-  const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 768px)");
-    const tabletQuery = window.matchMedia("(min-width: 769px) and (max-width: 1280px)");
 
     const update = () => {
-      if (mobileQuery.matches) {
-        setViewport("mobile");
-      } else if (tabletQuery.matches) {
-        setViewport("tablet");
-      } else {
-        setViewport("desktop");
-      }
+      setViewport(mobileQuery.matches ? "mobile" : "desktop");
     };
 
     update();
     mobileQuery.addEventListener("change", update);
-    tabletQuery.addEventListener("change", update);
 
     return () => {
       mobileQuery.removeEventListener("change", update);
-      tabletQuery.removeEventListener("change", update);
     };
   }, []);
 
-  const isTablet = viewport === "tablet";
   const src = viewport === "mobile" ? mobileSrc : desktopSrc;
   const imageStyle = {
-    objectFit: isTablet ? "contain" as const : "cover" as const,
+    objectFit: "cover" as const,
   };
-  const wrapperStyle = isTablet ? { backgroundColor: "black" } : undefined;
+  const wrapperStyle = { backgroundColor: "black" };
 
   return (
     <div className="absolute inset-0" style={wrapperStyle}>
