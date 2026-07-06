@@ -28,7 +28,7 @@ export default async function ProductsPage({ searchParams }: Props) {
     page,
     search: search || undefined,
     category: category || undefined,
-    limit: 20,
+    limit: 10,
   });
 
   return (
