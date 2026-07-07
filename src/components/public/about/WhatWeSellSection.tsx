@@ -41,7 +41,7 @@ export async function WhatWeSellSection() {
                 className="group cursor-pointer"
               >
                 {/* Photo */}
-                <div className="relative aspect-[3/4] bg-[var(--color-surface)] overflow-hidden mb-4">
+                <div className="relative aspect-square bg-[var(--color-surface)] overflow-hidden mb-4">
                   {photo ? (
                     <Image
                       src={photo}

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { VariantSelector } from "./VariantSelector";
-import { QuantitySelector } from "./QuantitySelector";
+import { Fragment, useState } from "react";
+import { VariantSelector } from "@/components/public/product/VariantSelector";
+import { QuantitySelector } from "@/components/public/product/QuantitySelector";
 import { buildWaUrl, buildProductMessage } from "@/lib/wa";
 import type { Product, ProductColor } from "@/types";
 
@@ -78,7 +78,7 @@ export function ProductInfo({ product }: Props) {
             href={product.linkShopee}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center font-sans text-sm font-medium py-4 bg-[var(--color-text)] text-[var(--color-bg)] hover:bg-[var(--color-brown-dark)] transition-colors"
+            className="w-full flex items-center justify-center font-sans text-sm font-medium py-4 bg-[#EE4D2D] text-[var(--color-bg)] hover:bg-[var(--color-brown-dark)] transition-colors"
           >
             Buy on Shopee
           </a>
@@ -107,20 +107,7 @@ export function ProductInfo({ product }: Props) {
         </a>
       </div>
 
-      {/* Description */}
-      {product.description && (
-        <>
-          <div className="border-t border-[var(--color-border)]" />
-          <div className="flex flex-col gap-3">
-            <p className="font-sans text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
-              Description
-            </p>
-            <p className="font-sans text-sm text-[var(--color-text)] leading-relaxed">
-              {product.description}
-            </p>
-          </div>
-        </>
-      )}
+      {/* Description moved to product page */}
 
       {/* Material */}
       {product.material && (

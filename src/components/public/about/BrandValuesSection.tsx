@@ -20,12 +20,12 @@ export function BrandValuesSection({ values }: Props) {
       <div className="content-wrapper">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between md:items-end items-center mb-16 gap-6 text-center md:text-left">
+          <div className="max-w-full md:max-w-xs">
             <p className="font-sans text-xs uppercase tracking-[0.3em] text-[var(--color-accent)] mb-4">
               What We Stand For
             </p>
-            <h2 className="font-display text-[48px] leading-[1.2] font-medium text-[var(--color-text)]">
+            <h2 className="font-display text-4xl md:text-[48px] leading-[1.1] font-medium text-[var(--color-text)]">
               Our Values
             </h2>
           </div>
@@ -39,7 +39,7 @@ export function BrandValuesSection({ values }: Props) {
           {items.map((value, i) => (
             <div
               key={i}
-              className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-16 py-8 hover:bg-[var(--color-surface)] transition-colors -mx-6 px-6"
+              className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-16 py-8 hover:bg-[var(--color-surface)] transition-colors md:-mx-6 md:px-6"
             >
               {/* Number */}
               <span className="font-display text-5xl font-medium text-[var(--color-border)] group-hover:text-[var(--color-accent)] transition-colors w-16 flex-shrink-0">

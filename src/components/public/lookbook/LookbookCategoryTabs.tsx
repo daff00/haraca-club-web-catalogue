@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const TABS = [
   { label: "All", value: "" },
@@ -10,33 +11,32 @@ const TABS = [
 ];
 
 export function LookbookCategoryTabs({ selected }: { selected: string }) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  function handleTab(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set("category", value);
-    else params.delete("category");
-    router.push(`${pathname}?${params.toString()}`);
-  }
-
   return (
-    <div className="flex flex-wrap justify-center gap-8 mb-12 border-b border-[var(--color-border)] pb-0">
+    <div className="flex items-center gap-4 overflow-x-auto pb-4 mb-12 border-b border-[var(--color-border)] md:justify-center md:overflow-visible">
       {TABS.map((tab) => {
         const isActive = selected === tab.value;
+        const params = new URLSearchParams(searchParams.toString());
+        if (tab.value) params.set("category", tab.value);
+        else params.delete("category");
+        const queryString = params.toString();
+        const href = queryString ? `${pathname}?${queryString}` : pathname;
+
         return (
-          <button
+          <Link
             key={tab.value}
-            onClick={() => handleTab(tab.value)}
-            className={`font-sans text-sm uppercase tracking-wider pb-4 border-b-2 transition-colors ${
+            href={href}
+            scroll={false}
+            className={`min-w-max whitespace-nowrap font-sans text-sm uppercase tracking-wider pb-4 border-b-2 transition-colors ${
               isActive
                 ? "text-[var(--color-text)] border-[var(--color-text)]"
                 : "text-[var(--color-text-muted)] border-transparent hover:text-[var(--color-text)]"
             }`}
           >
             {tab.label}
-          </button>
+          </Link>
         );
       })}
     </div>

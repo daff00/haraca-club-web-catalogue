@@ -30,16 +30,16 @@ describe("ShopFilterBar", () => {
     expect(sizeL.className).toContain("bg-[var(--color-text)]");
   });
 
-  it("toggles size on click", () => {
+  it("creates correct size link href", () => {
     render(<ShopFilterBar selectedSizes={[]} selectedSort="" />);
-    fireEvent.click(screen.getByText("M"));
-    expect(mockPush).toHaveBeenCalledWith("/shop?sizes=M");
+    const sizeM = screen.getByRole("link", { name: "M" });
+    expect(sizeM).toHaveAttribute("href", "/shop?sizes=M");
   });
 
-  it("deselects size when clicked again", () => {
+  it("creates correct deselect link href", () => {
     render(<ShopFilterBar selectedSizes={["M"]} selectedSort="" />);
-    fireEvent.click(screen.getByText("M"));
-    expect(mockPush).toHaveBeenCalledWith("/shop");
+    const sizeM = screen.getByRole("link", { name: "M" });
+    expect(sizeM).toHaveAttribute("href", "/shop");
   });
 
   it("updates sort when dropdown changed", () => {

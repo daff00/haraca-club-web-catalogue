@@ -24,6 +24,7 @@ const config: Config = {
   collectCoverageFrom: [
     "src/actions/**/*.ts",
     "src/components/admin/**/*.tsx",
+    "src/components/public/**/*.tsx",
     "src/lib/**/*.ts",
   ],
 };

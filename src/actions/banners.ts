@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { BannerSchema, type BannerInput } from "@/lib/validations";
 import { getSession } from "@/lib/auth";
-import { deleteFromStorage } from "@/lib/supabase";
+import { deleteFromStorage, deleteMultipleFromStorage } from "@/lib/supabase";
 import type { BannerPage } from "@/types";
 
 async function requireAuth() {
@@ -40,19 +40,28 @@ export async function getActiveBanner(page: BannerPage) {
   });
 }
 
+export async function getActiveBanners(page: BannerPage) {
+  return prisma.banner.findMany({
+    where: { page, isActive: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function updateBanner(id: string, input: BannerInput) {
   await requireAuth();
 
   const validated = BannerSchema.parse(input);
 
-  // Get exiting banner
   const existing = await prisma.banner.findUnique({
     where: { id },
-    select: {photoUrl: true},
+    select: {
+      photoUrl: true,
+      desktopPhotoUrl: true,
+      mobilePhotoUrl: true,
+    },
   });
 
-  // Kalau banner ini di-set active, nonaktifkan banner lain di halaman yang sama
-  if (validated.isActive) {
+  if (validated.isActive && validated.page !== "HOME") {
     await prisma.banner.updateMany({
       where: { page: validated.page, id: { not: id } },
       data: { isActive: false },
@@ -64,15 +73,31 @@ export async function updateBanner(id: string, input: BannerInput) {
     data: validated,
   });
 
-  // Delete old photo when updated
+  // Hapus foto lama dari storage kalau diganti
+  const urlsToDelete: string[] = [];
   if (existing?.photoUrl && existing.photoUrl !== validated.photoUrl) {
-    await deleteFromStorage(existing.photoUrl);
+    urlsToDelete.push(existing.photoUrl);
+  }
+  if (
+    existing?.desktopPhotoUrl &&
+    existing.desktopPhotoUrl !== validated.desktopPhotoUrl
+  ) {
+    urlsToDelete.push(existing.desktopPhotoUrl);
+  }
+  if (
+    existing?.mobilePhotoUrl &&
+    existing.mobilePhotoUrl !== validated.mobilePhotoUrl
+  ) {
+    urlsToDelete.push(existing.mobilePhotoUrl);
+  }
+  if (urlsToDelete.length > 0) {
+    await deleteMultipleFromStorage(urlsToDelete);
   }
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath("/about");
+  revalidatePath("/lookbook");
 
   return { success: true, banner };
 }
@@ -80,22 +105,31 @@ export async function updateBanner(id: string, input: BannerInput) {
 export async function deleteBanner(id: string) {
   await requireAuth();
 
-  // Get banner
   const banner = await prisma.banner.findUnique({
     where: { id },
-    select: { photoUrl: true },
+    select: {
+      photoUrl: true,
+      desktopPhotoUrl: true,
+      mobilePhotoUrl: true,
+    },
   });
 
   await prisma.banner.delete({ where: { id } });
 
-  if (banner?.photoUrl) {
-    await deleteFromStorage(banner.photoUrl);
+  const urlsToDelete = [
+    banner?.photoUrl,
+    banner?.desktopPhotoUrl,
+    banner?.mobilePhotoUrl,
+  ].filter(Boolean) as string[];
+
+  if (urlsToDelete.length > 0) {
+    await deleteMultipleFromStorage(urlsToDelete);
   }
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath("/about");
+  revalidatePath("/lookbook");
 
   return { success: true };
 }

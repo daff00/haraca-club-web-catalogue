@@ -4,7 +4,6 @@ import Image from "next/image";
 import { getProductBySlug } from "@/actions/products";
 import { PhotoGallery } from "@/components/public/product/PhotoGallery";
 import { ProductInfo } from "@/components/public/product/ProductInfo";
-import { getContactInfo } from "@/actions/contact";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -12,9 +11,8 @@ interface Props {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const [product, contact] = await Promise.all([
+  const [product] = await Promise.all([
     getProductBySlug(slug),
-    getContactInfo(),
   ]);
 
   if (!product) notFound();
@@ -28,15 +26,18 @@ export default async function ProductDetailPage({ params }: Props) {
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-sans text-[var(--color-text-muted)] mb-8">
-          <Link href="/shop" className="hover:text-[var(--color-text)] transition-colors">
+          <div></div>
+          {/* <Link href="/shop" className="hover:text-[var(--color-text)] transition-colors">
             Shop
-          </Link>
+          </Link> */}
+          {/*
           <span>›</span>
           <span className="capitalize">
             {product.category.charAt(0) + product.category.slice(1).toLowerCase()}
           </span>
           <span>›</span>
-          <span className="text-[var(--color-text)]">{product.name}</span>
+          
+          <span className="text-[var(--color-text)]">{product.name}</span> */ }
         </div>
 
         {/* Main layout */}
@@ -48,6 +49,21 @@ export default async function ProductDetailPage({ params }: Props) {
           <ProductInfo product={product} />
         </div>
 
+          {/* Description — moved below main layout to give full-width space */}
+          {product.description && (
+            <section className="py-12">
+              <div className="content-wrapper">
+                <div className="border-t border-[var(--color-border)] pt-8">
+                  <h2 className="font-display text-[28px] font-medium text-[var(--color-text)] mb-4">
+                    Description
+                  </h2>
+                  <div className="font-sans text-sm text-[var(--color-text)] leading-relaxed whitespace-pre-wrap">
+                    {product.description}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
       </div>
 
       {/* ── SEE IT STYLED ────────────────────────────────── */}
@@ -58,23 +74,13 @@ export default async function ProductDetailPage({ params }: Props) {
               <h2 className="font-display text-[40px] font-medium text-[var(--color-text)]">
                 See It Styled
               </h2>
-              {contact?.instagram && (
-                <a
-                  href={`https://instagram.com/${contact.instagram.replace("@", "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-sans text-xs uppercase tracking-widest text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
-                >
-                  Follow {contact.instagram}
-                </a>
-              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {styledPhotos.map((url, i) => (
                 <div
                   key={i}
-                  className="relative aspect-[3/4] bg-[var(--color-surface)] overflow-hidden"
+                  className="relative aspect-square bg-[var(--color-surface)] overflow-hidden"
                 >
                   <Image
                     src={url}

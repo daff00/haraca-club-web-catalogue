@@ -21,21 +21,21 @@ export function LookbookGrid({ photos }: Props) {
 
   return (
     <>
-      {/* Masonry grid */}
-      <div className="columns-2 md:columns-3 gap-6">
+      {/* Grid layout */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {photos.map((photo) => (
           <div
             key={photo.id}
-            className="break-inside-avoid mb-6 cursor-pointer group"
+            className="cursor-pointer group"
             onClick={() => setSelected(photo)}
           >
             {/* Photo */}
-            <div className="overflow-hidden bg-[var(--color-surface)]">
+              <div className="overflow-hidden bg-[var(--color-surface)]">
               <Image
                 src={photo.photoUrl}
                 alt={photo.product?.name ?? "Lookbook"}
                 width={600}
-                height={800}
+                height={600}
                 className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 50vw, 33vw"
               />

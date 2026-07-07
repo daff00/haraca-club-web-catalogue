@@ -1,19 +1,85 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { toggleProductActive, deleteProduct } from "@/actions/products";
+import {
+  bulkDeleteProducts,
+  bulkUpdateProducts,
+  toggleProductActive,
+  deleteProduct,
+} from "@/actions/products";
 import type { Product } from "@/types";
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { BulkProductEditDialog } from "@/components/admin/BulkProductEditDialog";
 
 interface Props {
   products: Product[];
+  total: number;
 }
 
-export function ProductsTable({ products }: Props) {
+export function ProductsTable({ products, total }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectAllMatching, setSelectAllMatching] = useState(false);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showBulkDelete, setShowBulkDelete] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+  const [bulkPrice, setBulkPrice] = useState("");
+  const [bulkStatus, setBulkStatus] = useState<"unset" | "active" | "inactive">("unset");
+  const [bulkSizes, setBulkSizes] = useState<string[]>([]);
+  const [bulkLabels, setBulkLabels] = useState<string[]>([]);
+  const [bulkLinkShopee, setBulkLinkShopee] = useState("");
+  const [bulkLinkTiktok, setBulkLinkTiktok] = useState("");
+
+  const categoryFilter = searchParams?.get("category") ?? undefined;
+  const searchFilter = searchParams?.get("search") ?? undefined;
+
+  const hasFilter = Boolean(categoryFilter || searchFilter);
+  const filters = useMemo(
+    () => ({ category: categoryFilter, search: searchFilter }),
+    [categoryFilter, searchFilter],
+  );
+
+  const selectedCount = selectAllMatching ? total : selectedIds.length;
+  const allPageSelected = products.length > 0 && selectedIds.length === products.length;
+  const canSelectAllMatching = !selectAllMatching && allPageSelected && total > products.length && hasFilter;
+  const isAnySelected = selectedCount > 0;
+
+  const toggleRowSelection = (id: string) => {
+    if (!hasFilter) return;
+    setSelectAllMatching(false);
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const togglePageSelection = () => {
+    if (!hasFilter) return;
+    setSelectAllMatching(false);
+    if (allPageSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(products.map((product) => product.id));
+    }
+  };
+
+  const openSelectAllMatching = () => {
+    setSelectAllMatching(true);
+  };
+
+  const resetBulkForm = () => {
+    setBulkPrice("");
+    setBulkStatus("unset");
+    setBulkSizes([]);
+    setBulkLabels([]);
+    setBulkLinkShopee("");
+    setBulkLinkTiktok("");
+  };
 
   async function handleDelete() {
     if (!productToDelete) return;
@@ -22,11 +88,68 @@ export function ProductsTable({ products }: Props) {
       toast.success("Product deleted");
       setShowConfirm(false);
       setProductToDelete(null);
-      // Optional: refresh data via router.refresh() if needed
+      router.refresh();
     } else {
       toast.error("Failed to delete product");
     }
   }
+
+  const handleBulkEditSubmit = async () => {
+    const updates: {
+      price?: number;
+      isActive?: boolean;
+      labels?: string[];
+      sizes?: string[];
+      linkShopee?: string;
+      linkTiktok?: string;
+    } = {};
+
+    if (bulkPrice.trim() !== "") {
+      const parsed = Number(bulkPrice);
+      if (!Number.isNaN(parsed)) updates.price = parsed;
+    }
+
+    if (bulkStatus === "active") updates.isActive = true;
+    if (bulkStatus === "inactive") updates.isActive = false;
+    if (bulkSizes.length > 0) updates.sizes = bulkSizes;
+    if (bulkLabels.length > 0) updates.labels = bulkLabels;
+    if (bulkLinkShopee.trim() !== "") updates.linkShopee = bulkLinkShopee.trim();
+    if (bulkLinkTiktok.trim() !== "") updates.linkTiktok = bulkLinkTiktok.trim();
+
+    const res = await bulkUpdateProducts({
+      ids: selectAllMatching ? undefined : selectedIds,
+      filters: selectAllMatching ? filters : undefined,
+      selectAllMatching,
+      updates,
+    });
+
+    if (res.success) {
+      toast.success("Products updated successfully");
+      setShowBulkEdit(false);
+      resetBulkForm();
+      router.refresh();
+    } else {
+      toast.error(res.message || "Failed to edit products");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const res = await bulkDeleteProducts({
+      ids: selectAllMatching ? undefined : selectedIds,
+      filters: selectAllMatching ? filters : undefined,
+      selectAllMatching,
+    });
+
+    if (res.success) {
+      toast.success(`Deleted ${res.deletedCount ?? 0} products`);
+      setShowBulkDelete(false);
+      setSelectedIds([]);
+      setSelectAllMatching(false);
+      router.refresh();
+    } else {
+      toast.error(res.message || "Failed to delete products");
+    }
+  };
 
   if (products.length === 0) {
     return (
@@ -52,7 +175,50 @@ export function ProductsTable({ products }: Props) {
 
   return (
     <>
-      {/* ConfirmDialog di OUTSIDE tabel – tidak akan menjadi child tbody */}
+      <BulkProductEditDialog
+        open={showBulkEdit}
+        price={bulkPrice}
+        status={bulkStatus}
+        sizes={bulkSizes}
+        labels={bulkLabels}
+        linkShopee={bulkLinkShopee}
+        linkTiktok={bulkLinkTiktok}
+        onPriceChange={setBulkPrice}
+        onStatusChange={(value) => setBulkStatus(value)}
+        onToggleSize={(size) =>
+          setBulkSizes((prev) =>
+            prev.includes(size) ? prev.filter((value) => value !== size) : [...prev, size],
+          )
+        }
+        onToggleLabel={(label) =>
+          setBulkLabels((prev) =>
+            prev.includes(label) ? prev.filter((value) => value !== label) : [...prev, label],
+          )
+        }
+        onLinkShopeeChange={setBulkLinkShopee}
+        onLinkTiktokChange={setBulkLinkTiktok}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowBulkEdit(false);
+          }
+        }}
+        onClose={() => setShowBulkEdit(false)}
+        onSubmit={handleBulkEditSubmit}
+        disabledSubmit={!isAnySelected}
+      />
+
+      <ConfirmDialog
+        open={showBulkDelete}
+        title="Delete selected products"
+        description={`Are you sure you want to delete ${selectedCount} selected product${
+          selectedCount === 1 ? "" : "s"
+        }? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleBulkDelete}
+        onCancel={() => setShowBulkDelete(false)}
+      />
+
       <ConfirmDialog
         open={showConfirm}
         title="Delete Product"
@@ -66,10 +232,61 @@ export function ProductsTable({ products }: Props) {
         }}
       />
 
+      {isAnySelected && (
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)]/70 px-4 py-3">
+        {!hasFilter && (
+          <p className="text-sm text-[var(--color-text-muted)] mb-2">
+            Please apply a filter or search before selecting products for bulk actions.
+          </p>
+        )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-[var(--color-text)]">
+              {selectAllMatching
+                ? `All ${total} matching products selected.`
+                : `${selectedCount} selected.`}
+              {canSelectAllMatching && (
+                <button
+                  type="button"
+                  onClick={openSelectAllMatching}
+                  className="ml-2 text-sm text-[var(--color-accent)] underline"
+                >
+                  Select all {total} matching products
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowBulkEdit(true)}
+                className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors"
+              >
+                Bulk edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowBulkDelete(true)}
+                className="rounded-[var(--radius-btn)] bg-red-500 px-3 py-2 text-sm font-medium text-white hover:bg-red-600 transition-colors"
+              >
+                Bulk delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface)]/40">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
+                <input
+                  type="checkbox"
+                  checked={selectAllMatching || allPageSelected}
+                  onChange={togglePageSelection}
+                  disabled={!hasFilter}
+                  className="h-4 w-4 text-[var(--color-accent)] border-[var(--color-border)] rounded disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
                 Product
               </th>
@@ -100,6 +317,9 @@ export function ProductsTable({ products }: Props) {
                   setProductToDelete(product);
                   setShowConfirm(true);
                 }}
+                isSelected={selectedIds.includes(product.id) || selectAllMatching}
+                onToggle={() => toggleRowSelection(product.id)}
+                hasFilter={hasFilter}
               />
             ))}
           </tbody>
@@ -113,10 +333,16 @@ function ProductRow({
   product,
   isEven,
   onDelete,
+  isSelected,
+  onToggle,
+  hasFilter,
 }: {
   product: Product;
   isEven: boolean;
   onDelete: () => void;
+  isSelected: boolean;
+  onToggle: () => void;
+  hasFilter: boolean;
 }) {
   const [isActive, setIsActive] = useState(product.isActive);
   const [toggling, setToggling] = useState(false);
@@ -149,6 +375,15 @@ function ProductRow({
         isEven ? "bg-white" : "bg-[var(--color-surface-alt)]"
       }`}
     >
+      <td className="px-4 py-3">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={onToggle}
+          disabled={!hasFilter}
+          className="h-4 w-4 text-[var(--color-accent)] border-[var(--color-border)] rounded disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      </td>
       {/* Product info */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">

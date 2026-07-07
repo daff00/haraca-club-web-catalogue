@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getProducts } from "@/actions/products";
 import { getActiveBanner } from "@/actions/banners";
 import { ProductCard } from "@/components/public/ProductCard";
@@ -6,6 +5,11 @@ import { CategoryTabs } from "@/components/public/shop/CategoryTabs";
 import { ShopFilterBar } from "@/components/public/shop/ShopFilterBar";
 import { ShopPagination } from "@/components/public/shop/ShopPagination";
 import { PlaceholderImage } from "@/components/public/PlaceholderImage";
+import { ResponsiveBanner } from "@/components/public/ResponsiveBanner";
+
+export const metadata = {
+  title: "Shop",
+};
 
 interface Props {
   searchParams: Promise<{
@@ -50,23 +54,29 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <>
       {/* ── BANNER ───────────────────────────────────────── */}
-      <section className="relative h-[400px] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
-        {banner?.photoUrl ? (
-          <Image
-            src={banner.photoUrl}
-            alt="Shop Banner"
-            fill
-            className="object-cover opacity-40"
-            priority
-          />
+      <section className="relative w-full aspect-[9/16] md:aspect-[1200/518] flex items-center justify-center overflow-hidden bg-[var(--color-text)]">
+        {banner ? (
+          <div className="absolute inset-0">
+            <ResponsiveBanner
+              banner={banner}
+              alt="Shop Banner"
+              className="object-cover"
+              priority
+            />
+
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/70 to-black/65" />
+          </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-dark)] via-[var(--color-brown-dark)] to-[var(--color-dark)]" />
         )}
+
         <div className="relative z-10 text-center px-6">
-          <h1 className="font-display text-[64px] leading-[1.1] font-medium text-[var(--color-bg)] mb-4">
+          <h1 className="font-display text-[64px] leading-[1.1] font-medium text-[var(--color-bg)] mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
             Shop All
           </h1>
-          <p className="font-sans text-sm uppercase tracking-widest text-[var(--color-accent)]">
+
+          <p className="font-sans text-sm uppercase tracking-widest text-[var(--color-accent)] drop-shadow-md">
             Thoughtfully made essentials for the modern wardrobe
           </p>
         </div>

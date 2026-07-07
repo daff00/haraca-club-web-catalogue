@@ -14,7 +14,7 @@ export function ProductCard({ product }: Props) {
   return (
     <Link href={`/shop/${product.slug}`} className="group block">
       {/* Photo */}
-      <div className="relative aspect-[3/4] bg-[var(--color-surface)] mb-3 overflow-hidden">
+      <div className="relative aspect-square bg-[var(--color-surface)] mb-3 overflow-hidden">
         {mainPhoto ? (
           <>
             <Image

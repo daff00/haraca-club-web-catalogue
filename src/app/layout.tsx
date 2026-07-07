@@ -22,7 +22,10 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: {
     default: "Haraca — Wear It Simply",
-    template: "%s | Haraca",
+    template: "Haraca | %s",
+  },
+  icons: {
+    icon: "/haraca_logo.svg",
   },
   description:
     "Everyday essentials, thoughtfully made. Shop tanktops, oversized tees, and casual wear from Haraca.",

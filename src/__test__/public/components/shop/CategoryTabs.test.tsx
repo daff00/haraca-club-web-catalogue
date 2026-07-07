@@ -26,15 +26,15 @@ describe("CategoryTabs", () => {
     expect(activeTab.className).toContain("text-[var(--color-text)]");
   });
 
-  it("navigates when tab clicked", () => {
+  it("creates correct tab link href", () => {
     render(<CategoryTabs selected="" />);
-    fireEvent.click(screen.getByText("Tanktop"));
-    expect(mockPush).toHaveBeenCalledWith("/shop?category=TANKTOP");
+    const tanktopTab = screen.getByRole("link", { name: "Tanktop" });
+    expect(tanktopTab).toHaveAttribute("href", "/shop?category=TANKTOP");
   });
 
-  it("clears category when All Products clicked", () => {
+  it("creates correct all products link href", () => {
     render(<CategoryTabs selected="TANKTOP" />);
-    fireEvent.click(screen.getByText("All Products"));
-    expect(mockPush).toHaveBeenCalledWith("/shop");
+    const allProductsTab = screen.getByRole("link", { name: "All Products" });
+    expect(allProductsTab).toHaveAttribute("href", "/shop");
   });
 });
