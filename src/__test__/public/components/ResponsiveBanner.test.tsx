@@ -54,6 +54,34 @@ describe("ResponsiveBanner", () => {
 
     render(<ResponsiveBanner banner={banner} alt="Banner" />);
     const img = screen.getByRole("img");
-    expect(img).toHaveStyle({ objectFit: "contain" });
+    expect(img).toHaveStyle({ objectFit: "contain", objectPosition: "center" });
+  });
+
+  it("applies a custom wrapper background color", () => {
+    render(
+      <ResponsiveBanner
+        banner={banner}
+        alt="Banner"
+        backgroundColor="#1a1a1a"
+      />
+    );
+
+    expect(screen.getByTestId("responsive-banner-wrapper")).toHaveStyle({
+      backgroundColor: "#1a1a1a",
+    });
+  });
+
+  it("uses fallback background color when auto extraction is disabled", () => {
+    render(
+      <ResponsiveBanner
+        banner={banner}
+        alt="Banner"
+        autoBackgroundColor={false}
+      />
+    );
+
+    expect(screen.getByTestId("responsive-banner-wrapper")).toHaveStyle({
+      backgroundColor: "#111111",
+    });
   });
 });
