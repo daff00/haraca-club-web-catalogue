@@ -9,6 +9,7 @@ interface Props {
   alt: string;
   className?: string;
   priority?: boolean;
+  fit?: "cover" | "contain";
   backgroundColor?: string;
   autoBackgroundColor?: boolean;
   fallbackBackgroundColor?: string;
@@ -19,6 +20,7 @@ export function ResponsiveBanner({
   alt,
   className,
   priority,
+  fit = "contain",
   backgroundColor,
   autoBackgroundColor = true,
   fallbackBackgroundColor = "#111111",
@@ -45,7 +47,7 @@ export function ResponsiveBanner({
 
   const src = viewport === "mobile" ? mobileSrc : desktopSrc;
   const imageStyle = {
-    objectFit: "contain" as const,
+    objectFit: fit as const,
     objectPosition: "center" as const,
   };
 
