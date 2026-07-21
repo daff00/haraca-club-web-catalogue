@@ -9,12 +9,26 @@ interface Props {
   alt: string;
   className?: string;
   priority?: boolean;
+  fit?: "cover" | "contain";
+  backgroundColor?: string;
+  autoBackgroundColor?: boolean;
+  fallbackBackgroundColor?: string;
 }
 
-export function ResponsiveBanner({ banner, alt, className, priority }: Props) {
+export function ResponsiveBanner({
+  banner,
+  alt,
+  className,
+  priority,
+  fit = "contain",
+  backgroundColor,
+  autoBackgroundColor = true,
+  fallbackBackgroundColor = "#111111",
+}: Props) {
   const desktopSrc = banner.desktopPhotoUrl || banner.photoUrl;
   const mobileSrc = banner.mobilePhotoUrl || desktopSrc;
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
+  const [bgColor, setBgColor] = useState<string>(backgroundColor ?? fallbackBackgroundColor);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 768px)");
@@ -33,12 +47,81 @@ export function ResponsiveBanner({ banner, alt, className, priority }: Props) {
 
   const src = viewport === "mobile" ? mobileSrc : desktopSrc;
   const imageStyle = {
-    objectFit: "cover" as const,
+    objectFit: fit as const,
+    objectPosition: "center" as const,
   };
-  const wrapperStyle = { backgroundColor: "black" };
+
+  useEffect(() => {
+    if (backgroundColor) {
+      setBgColor(backgroundColor);
+      return;
+    }
+
+    if (!autoBackgroundColor) {
+      setBgColor(fallbackBackgroundColor);
+      return;
+    }
+
+    let mounted = true;
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.src = src;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      try {
+        ctx.drawImage(img, 0, 0);
+      } catch {
+        return;
+      }
+
+      try {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        let count = 0;
+        const data = imageData.data;
+        const step = 4 * 20;
+
+        for (let i = 0; i < data.length; i += step) {
+          const alpha = data[i + 3];
+          if (alpha === 0) continue;
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count += 1;
+        }
+
+        if (count > 0 && mounted) {
+          setBgColor(`rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`);
+        }
+      } catch {
+        // fall back to transparent if cross-origin or other canvas error
+      }
+    };
+
+    img.onerror = () => {
+      if (mounted) {
+        setBgColor(fallbackBackgroundColor);
+      }
+    };
+
+    return () => {
+      mounted = false;
+    };
+  }, [src, backgroundColor, autoBackgroundColor]);
+
+  const wrapperStyle = { backgroundColor: bgColor };
 
   return (
-    <div className="absolute inset-0" style={wrapperStyle}>
+    <div data-testid="responsive-banner-wrapper" className="absolute inset-0" style={wrapperStyle}>
       <Image
         src={src}
         alt={alt}
@@ -46,6 +129,7 @@ export function ResponsiveBanner({ banner, alt, className, priority }: Props) {
         className={className}
         priority={priority}
         style={imageStyle}
+        sizes="100vw"
       />
     </div>
   );
