@@ -111,12 +111,7 @@ The seed script creates:
 - sample brand content
 - sample products and testimonials
 
-Default admin credentials after seeding:
-
-- Email: `admin@haraca.id`
-- Password: `haraca2024!`
-
-> Change the password after your first login.
+> **Admin credentials:** the seed script sets a default admin email/password — check `prisma/seed.ts` for the current values. Change the password immediately after your first login, and never commit real credentials to the README or version control.
 
 ### 3. Create Supabase storage bucket
 
