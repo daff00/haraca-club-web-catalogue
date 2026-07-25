@@ -69,7 +69,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
           <ResponsiveBanner
             banner={b}
             alt={`Banner ${i + 1}`}
-            className="object-cover object-center"
+            fit="cover"
             priority={i === 0}
           />
         </div>
