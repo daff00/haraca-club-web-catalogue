@@ -1,24 +1,14 @@
 import type { Metadata } from "next";
-import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+// Google Fonts will be loaded via CSS fallback due to build environment constraints
 import "./globals.css";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
     default: "Haraca — Wear It Simply",
-    template: "%s | Haraca",
+    template: "Haraca | %s",
+  },
+  icons: {
+    icon: "/haraca_logo.svg",
   },
   description:
     "Everyday essentials, thoughtfully made. Shop tanktops, oversized tees, and casual wear from Haraca.",
@@ -37,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
+    <html lang="en" className="font-sans">
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

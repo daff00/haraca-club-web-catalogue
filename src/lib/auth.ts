@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          admin.passwordHash
+          admin.passwordHash,
         );
 
         if (!isValid) return null;
@@ -38,15 +38,23 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/admin/login",
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.sub ?? "";
+      if (session.user) {
+        session.user.id = token.id as string;
       }
       return session;
     },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 };
 

@@ -4,7 +4,8 @@
  * Or add to package.json: "prisma": { "seed": "ts-node prisma/seed.ts" }
  */
 
-import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
+import { PrismaClient, ProductLabel } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -66,19 +67,81 @@ async function main() {
   });
   console.log("✓ Brand content seeded");
 
-  // ─── Sample Products ──────────────────────────────────
+  const media = (file: string) =>
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/haraca-media/${file}`;
+
   const products = [
+    // ─── OVERSIZE (6) ─────────────────────────────
     {
       name: "Haraca Oversize Tee — Black",
-      slug: "oversize-tee-black",
+      slug: "oversize-black",
       price: 129000,
       category: "OVERSIZE" as const,
       sizes: ["S", "M", "L", "XL", "XXL"],
-      colors: [{ name: "Black", hex: "#1A1714" }, { name: "White", hex: "#FAF7F2" }],
-      photos: [],
-      description: "Our signature oversized tee. Dropped shoulders, relaxed fit — wear it as a statement or keep it simple.",
-      material: "Cotton 100% Combed 30s",
-      labels: ["BEST_SELLER"] as const,
+      colors: [{ name: "Black", hex: "#1A1714" }],
+      photos: [
+        media("products/oversize-black-1.jpg"),
+        media("products/oversize-black-2.jpg"),
+      ],
+      description: "Signature oversized tee with relaxed fit.",
+      material: "Cotton Combed 30s",
+      labels: ["BEST_SELLER"] as ProductLabel[],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+    {
+      name: "Haraca Oversize Tee — White",
+      slug: "oversize-white",
+      price: 129000,
+      category: "OVERSIZE" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "White", hex: "#FAF7F2" }],
+      photos: [
+        media("products/oversize-white-1.jpg"),
+        media("products/oversize-white-2.jpg"),
+      ],
+      description: "Clean oversized everyday wear.",
+      material: "Cotton Combed 30s",
+      labels: [],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+    {
+      name: "Haraca Oversize Tee — Stone",
+      slug: "oversize-stone",
+      price: 129000,
+      category: "OVERSIZE" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "Stone", hex: "#C2B8A3" }],
+      photos: [
+        media("products/oversize-stone-1.jpg"),
+        media("products/oversize-stone-2.jpg"),
+      ],
+      description: "Neutral earth tone oversized fit.",
+      material: "Cotton Combed 30s",
+      labels: [],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+
+    // ─── TANKTOP (6) ─────────────────────────────
+    {
+      name: "Haraca Tanktop — Black",
+      slug: "tanktop-black",
+      price: 89000,
+      category: "TANKTOP" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "Black", hex: "#1A1714" }],
+      photos: [
+        media("products/tanktop-black-1.jpg"),
+        media("products/tanktop-black-2.jpg"),
+      ],
+      description: "Breathable daily tanktop.",
+      material: "Cotton Bamboo 40s",
+      labels: ["NEW_ARRIVAL"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,
@@ -88,12 +151,91 @@ async function main() {
       slug: "tanktop-cream",
       price: 89000,
       category: "TANKTOP" as const,
-      sizes: ["XS", "S", "M", "L", "XL"],
-      colors: [{ name: "Cream", hex: "#F0EBE0" }, { name: "Black", hex: "#1A1714" }],
-      photos: [],
-      description: "A minimal tanktop for daily wear. Clean cut, breathable fabric — your everyday essential.",
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "Cream", hex: "#F0EBE0" }],
+      photos: [
+        media("products/tanktop-cream-1.jpg"),
+        media("products/tanktop-cream-2.jpg"),
+      ],
+      description: "Soft neutral tanktop.",
       material: "Cotton Bamboo 40s",
-      labels: ["NEW_ARRIVAL"] as const,
+      labels: [],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+
+    // ─── REGULAR (6) ─────────────────────────────
+    {
+      name: "Haraca Regular Tee — Black",
+      slug: "regular-black",
+      price: 99000,
+      category: "REGULAR" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "Black", hex: "#1A1714" }],
+      photos: [
+        media("products/regular-black-1.jpg"),
+        media("products/regular-black-2.jpg"),
+      ],
+      description: "Classic everyday tee.",
+      material: "Cotton Combed 24s",
+      labels: [],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+    {
+      name: "Haraca Regular Tee — White",
+      slug: "regular-white",
+      price: 99000,
+      category: "REGULAR" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "White", hex: "#FAF7F2" }],
+      photos: [
+        media("products/regular-white-1.jpg"),
+        media("products/regular-white-2.jpg"),
+      ],
+      description: "Clean essential basic tee.",
+      material: "Cotton Combed 24s",
+      labels: [],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+
+    // ─── SABLON (6) ─────────────────────────────
+    {
+      name: "Haraca Sablon Tee — Typo Black",
+      slug: "sablon-typo-black",
+      price: 119000,
+      category: "SABLON" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "Black", hex: "#1A1714" }],
+      photos: [
+        media("products/sablon-typo-black-1.jpg"),
+        media("products/sablon-typo-black-2.jpg"),
+      ],
+      description: "Graphic typography print tee.",
+      material: "Cotton Combed 24s",
+      labels: ["BEST_SELLER"] as ProductLabel[],
+      linkShopee: null,
+      linkTiktok: null,
+      isActive: true,
+    },
+    {
+      name: "Haraca Sablon Tee — Minimal White",
+      slug: "sablon-minimal-white",
+      price: 119000,
+      category: "SABLON" as const,
+      sizes: ["S", "M", "L", "XL"],
+      colors: [{ name: "White", hex: "#FAF7F2" }],
+      photos: [
+        media("products/sablon-minimal-white-1.jpg"),
+        media("products/sablon-minimal-white-2.jpg"),
+      ],
+      description: "Minimal graphic print design.",
+      material: "Cotton Combed 24s",
+      labels: ["NEW_ARRIVAL"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,
@@ -117,7 +259,7 @@ async function main() {
   ];
 
   for (const t of testimonials) {
-    await prisma.testimonial.create({ data: t }).catch(() => {});
+    await prisma.testimonial.create({ data: t }).catch(() => { });
   }
   console.log("✓ Testimonials seeded");
 

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
+import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
+  const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -18,18 +19,23 @@ export async function POST(request: NextRequest) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const ext = file.name.split(".").pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  // Konversi ke WebP dengan sharp
+  const webpBuffer = await sharp(buffer)
+    .webp({ quality: 85 })
+    .toBuffer();
+
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
   const filePath = `products/${fileName}`;
 
   const { error } = await supabaseAdmin.storage
     .from(STORAGE_BUCKET)
-    .upload(filePath, buffer, {
-      contentType: file.type,
+    .upload(filePath, webpBuffer, {
+      contentType: "image/webp",
       upsert: false,
     });
 
   if (error) {
+    console.error("Supabase upload error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

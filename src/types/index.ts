@@ -5,7 +5,7 @@
 export type Category = "TANKTOP" | "OVERSIZE" | "REGULAR" | "SABLON";
 export type ProductLabel = "BEST_SELLER" | "NEW_ARRIVAL";
 export type LookbookCategory = "DAILY_CASUAL" | "OVERSIZE_STYLE" | "COUPLE_GROUP";
-export type BannerPage = "HOME" | "SHOP";
+export type BannerPage = "HOME" | "SHOP" | "LOOKBOOK" | "ABOUT";
 
 export interface ProductColor {
   name: string;
@@ -45,6 +45,7 @@ export interface Product {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  lookbookPhotos?: LookbookPhoto[];
 }
 
 export interface LookbookPhoto {
@@ -69,7 +70,11 @@ export interface Testimonial {
 
 export interface Banner {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   page: BannerPage;
   photoUrl: string;
+  desktopPhotoUrl: string | null;
+  mobilePhotoUrl: string | null;
   isActive: boolean;
 }
