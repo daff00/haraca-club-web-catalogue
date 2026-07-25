@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createProduct, updateProduct } from "@/actions/products";
-import type { Product, ProductColor } from "@/types";
+import type { Product, ProductColor, Category, ProductLabel } from "@/types";
 import { Button } from "@/components/ui/button";
 import slugify from "slugify";
 import {
@@ -29,7 +29,12 @@ const CATEGORIES = [
   { value: "OVERSIZE", label: "Oversize" },
   { value: "REGULAR", label: "Regular" },
   { value: "SABLON", label: "Sablon" },
+] as const;
+const labelItems: { value: ProductLabel; label: string }[] = [
+  { value: "BEST_SELLER", label: "Best Seller" },
+  { value: "NEW_ARRIVAL", label: "New Arrival" },
 ];
+
 const MAX_PHOTOS = 9;
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
@@ -48,7 +53,7 @@ export function ProductForm({ product }: Props) {
   const [name, setName] = useState(product?.name ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
-  const [category, setCategory] = useState(product?.category ?? "TANKTOP");
+  const [category, setCategory] = useState<Category>(product?.category ?? "TANKTOP");
   const [description, setDescription] = useState(product?.description ?? "");
   const [material, setMaterial] = useState(product?.material ?? "");
   const [sizes, setSizes] = useState<string[]>(product?.sizes ?? []);
@@ -56,8 +61,8 @@ export function ProductForm({ product }: Props) {
     (product?.colors as ProductColor[]) ?? [],
   );
   const [photos, setPhotos] = useState<string[]>(product?.photos ?? []);
-  const [labels, setLabels] = useState<string[]>(
-    (product?.labels as string[]) ?? [],
+  const [labels, setLabels] = useState<ProductLabel[]>(
+    product?.labels ?? [],
   );
   const [linkShopee, setLinkShopee] = useState(product?.linkShopee ?? "");
   const [linkTiktok, setLinkTiktok] = useState(product?.linkTiktok ?? "");
@@ -103,7 +108,7 @@ export function ProductForm({ product }: Props) {
     setErrors((prev) => ({ ...prev, sizes: "" }));
   };
 
-  const toggleLabel = (label: string) => {
+  const toggleLabel = (label: ProductLabel) => {
     setLabels((prev) =>
       prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
     );
@@ -341,13 +346,13 @@ export function ProductForm({ product }: Props) {
         name,
         slug,
         price: Number(price),
-        category: category as any,
+        category,
         sizes,
         colors,
         photos,
         description,
         material,
-        labels: labels as any,
+        labels,
         linkShopee: linkShopee || "",
         linkTiktok: linkTiktok || "",
         isActive,
@@ -360,8 +365,6 @@ export function ProductForm({ product }: Props) {
       if (res.success) {
         toast.success(isEdit ? "Product updated" : "Product created");
         router.push("/admin/products");
-      } else {
-        toast.error(res.error || "Something went wrong");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");
@@ -488,7 +491,7 @@ export function ProductForm({ product }: Props) {
                   <select
                     id="category"
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => setCategory(e.target.value as Category)}
                     className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
                   >
                     {CATEGORIES.map((c) => (
@@ -753,10 +756,7 @@ export function ProductForm({ product }: Props) {
               </h2>
             </div>
             <div className="p-5 space-y-3">
-              {[
-                { value: "BEST_SELLER", label: "Best Seller" },
-                { value: "NEW_ARRIVAL", label: "New Arrival" },
-              ].map((item) => (
+              {labelItems.map((item) => (
                 <div
                   key={item.value}
                   className="flex items-center justify-between"

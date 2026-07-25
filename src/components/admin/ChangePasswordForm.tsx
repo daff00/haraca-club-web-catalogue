@@ -28,8 +28,6 @@ export function ChangePasswordForm() {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-      } else {
-        toast.error(res.error || "Failed to change password");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");

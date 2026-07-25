@@ -5,7 +5,7 @@
  */
 
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ProductLabel } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -85,7 +85,7 @@ async function main() {
       ],
       description: "Signature oversized tee with relaxed fit.",
       material: "Cotton Combed 30s",
-      labels: ["BEST_SELLER"] as const,
+      labels: ["BEST_SELLER"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,
@@ -141,7 +141,7 @@ async function main() {
       ],
       description: "Breathable daily tanktop.",
       material: "Cotton Bamboo 40s",
-      labels: ["NEW_ARRIVAL"] as const,
+      labels: ["NEW_ARRIVAL"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,
@@ -217,7 +217,7 @@ async function main() {
       ],
       description: "Graphic typography print tee.",
       material: "Cotton Combed 24s",
-      labels: ["BEST_SELLER"] as const,
+      labels: ["BEST_SELLER"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,
@@ -235,7 +235,7 @@ async function main() {
       ],
       description: "Minimal graphic print design.",
       material: "Cotton Combed 24s",
-      labels: ["NEW_ARRIVAL"] as const,
+      labels: ["NEW_ARRIVAL"] as ProductLabel[],
       linkShopee: null,
       linkTiktok: null,
       isActive: true,

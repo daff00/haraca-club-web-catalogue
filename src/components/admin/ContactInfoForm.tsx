@@ -53,7 +53,6 @@ export function ContactInfoForm({ contact }: Props) {
       });
 
       if (res.success) toast.success("Contact info saved");
-      else toast.error(res.error || "Failed to save");
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");
     } finally {

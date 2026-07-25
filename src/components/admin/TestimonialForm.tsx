@@ -47,8 +47,6 @@ export function TestimonialForm({ testimonial }: Props) {
       if (res.success) {
         toast.success(isEdit ? "Testimonial updated" : "Testimonial created");
         router.push("/admin/testimonials");
-      } else {
-        toast.error(res.error || "Something went wrong");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");

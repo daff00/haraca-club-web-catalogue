@@ -56,29 +56,29 @@ describe("ProductsTable", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("renders empty state when no products", () => {
-    render(<ProductsTable products={[]} />);
+    render(<ProductsTable products={[]} total={0} />);
     // Sesuaikan dengan teks yang sebenarnya di komponen kamu
     expect(screen.getByText("No products yet")).toBeInTheDocument();
   });
 
   it("renders product list", () => {
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
     expect(screen.getByText("Haraca Oversize Tee")).toBeInTheDocument();
   });
 
   it("renders Best Seller badge", () => {
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
     expect(screen.getByText("Best Seller")).toBeInTheDocument();
   });
 
   it("renders formatted price", () => {
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
     expect(screen.getByText(/129\.000/)).toBeInTheDocument();
   });
 
   it("calls toggleProductActive when toggle clicked", async () => {
     (toggleProductActive as jest.Mock).mockResolvedValue({ success: true });
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
 
     const toggleBtn = screen.getByRole("button", { name: "" });
     fireEvent.click(toggleBtn);
@@ -89,14 +89,14 @@ describe("ProductsTable", () => {
   });
 
   it("shows confirm dialog when delete clicked", () => {
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
     fireEvent.click(screen.getByText("Delete"));
     expect(screen.getByText("Delete Product")).toBeInTheDocument();
   });
 
   it("calls deleteProduct after confirm", async () => {
     (deleteProduct as jest.Mock).mockResolvedValue({ success: true });
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
 
     fireEvent.click(screen.getByText("Delete"));
     fireEvent.click(screen.getByText("Confirm"));
@@ -108,7 +108,7 @@ describe("ProductsTable", () => {
   });
 
   it("does not call deleteProduct when cancel clicked", async () => {
-    render(<ProductsTable products={mockProducts} />);
+    render(<ProductsTable products={mockProducts} total={mockProducts.length} />);
     fireEvent.click(screen.getByText("Delete"));
     fireEvent.click(screen.getByText("Cancel"));
 

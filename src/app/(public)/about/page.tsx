@@ -13,8 +13,8 @@ export const metadata = {
 export default async function AboutPage() {
   const content = await getBrandContent();
 
-  const brandValues = (content?.brandValues as BrandValue[]) ?? [];
-  const behindPhotos = (content?.behindPhotos as BehindPhoto[]) ?? [];
+  const brandValues = (content?.brandValues as unknown as BrandValue[]) ?? [];
+  const behindPhotos = (content?.behindPhotos as unknown as BehindPhoto[]) ?? [];
 
   return (
     <>

@@ -37,7 +37,7 @@ export function BrandContentForm({ content }: Props) {
 
   // ─── Brand Values ─────────────────────────────────────
   const [brandValues, setBrandValues] = useState<BrandValue[]>(
-    (content?.brandValues as BrandValue[]) ?? [
+    (content?.brandValues as unknown as BrandValue[]) ?? [
       {
         icon: "comfort",
         title: "Comfortable Always",
@@ -186,8 +186,6 @@ export function BrandContentForm({ content }: Props) {
       if (res.success) {
         toast.success("Brand content saved");
         router.refresh();
-      } else {
-        toast.error(res.error || "Something went wrong");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");

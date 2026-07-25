@@ -4,15 +4,16 @@ import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createLookbookPhoto, updateLookbookPhoto } from "@/actions/lookbooks";
-import type { LookbookPhoto, Product } from "@/types";
+import type { LookbookPhoto, Product, LookbookCategory } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Upload, X, ArrowLeft, Save, Tag, Link as LinkIcon, Ruler, Info } from "lucide-react";
+import { ImageIcon, Upload, X, ArrowLeft, Save, Info } from "lucide-react";
 
 const CATEGORIES = [
   { value: "DAILY_CASUAL", label: "Daily Casual" },
   { value: "OVERSIZE_STYLE", label: "Oversize Style" },
   { value: "COUPLE_GROUP", label: "Couple & Group" },
 ];
+
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -27,7 +28,7 @@ export function LookbookForm({ photo, products }: Props) {
   const isEdit = !!photo;
 
   const [photoUrl, setPhotoUrl] = useState(photo?.photoUrl ?? "");
-  const [category, setCategory] = useState(photo?.category ?? "DAILY_CASUAL");
+  const [category, setCategory] = useState<LookbookCategory>(photo?.category ?? "DAILY_CASUAL");
   const [productId, setProductId] = useState(photo?.productId ?? "");
   const [modelSize, setModelSize] = useState(photo?.modelSize ?? "");
   const [modelStats, setModelStats] = useState(photo?.modelStats ?? "");
@@ -112,7 +113,7 @@ export function LookbookForm({ photo, products }: Props) {
     try {
       const input = {
         photoUrl,
-        category: category as any,
+        category,
         productId: productId || null,
         modelSize,
         modelStats,
@@ -126,8 +127,6 @@ export function LookbookForm({ photo, products }: Props) {
       if (res.success) {
         toast.success(isEdit ? "Photo updated" : "Photo added");
         router.push("/admin/lookbook");
-      } else {
-        toast.error(res.error || "Something went wrong");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Something went wrong");
@@ -251,7 +250,7 @@ export function LookbookForm({ photo, products }: Props) {
                 </label>
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) => setCategory(e.target.value as LookbookCategory)}
                   className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
                 >
                   {CATEGORIES.map((c) => (

@@ -43,8 +43,6 @@ export function AdminUsersTable({ users }: Props) {
         setPassword("");
         setShowForm(false);
         router.refresh();
-      } else {
-        toast.error(res.error || "Failed to create admin");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Failed to create admin");
@@ -61,8 +59,6 @@ export function AdminUsersTable({ users }: Props) {
       if (res.success) {
         toast.success("Admin deleted");
         router.refresh();
-      } else {
-        toast.error(res.error || "Failed to delete admin");
       }
     } catch (err: any) {
       toast.error(err?.message ?? "Failed to delete admin");

@@ -236,7 +236,7 @@ describe("Product Actions", () => {
         colors: [{ name: "Black", hex: "#000000" }],
         description: "A great tee",
         material: "Cotton",
-        labels: ["BEST_SELLER"],
+        labels: ["BEST_SELLER"] as ("BEST_SELLER" | "NEW_ARRIVAL")[],
         linkShopee: "",   // string kosong, bukan null
         linkTiktok: "",   // string kosong
         isActive: true,
@@ -266,7 +266,7 @@ describe("Product Actions", () => {
         colors: [{ name: "Black", hex: "#000000" }],
         description: "A great tee",
         material: "Cotton",
-        labels: ["BEST_SELLER"],
+        labels: ["BEST_SELLER"] as ("BEST_SELLER" | "NEW_ARRIVAL")[],
         linkShopee: "",
         linkTiktok: "",
         isActive: true,

@@ -45,6 +45,7 @@ export interface Product {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  lookbookPhotos?: LookbookPhoto[];
 }
 
 export interface LookbookPhoto {
@@ -69,9 +70,11 @@ export interface Testimonial {
 
 export interface Banner {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   page: BannerPage;
   photoUrl: string;
-  desktopPhotoUrl?: string;
-  mobilePhotoUrl?: string;
+  desktopPhotoUrl: string | null;
+  mobilePhotoUrl: string | null;
   isActive: boolean;
 }

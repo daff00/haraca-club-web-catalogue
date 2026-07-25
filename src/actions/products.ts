@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { ProductSchema, type ProductInput } from "@/lib/validations";
-import type { Product } from "@/types";
+import type { Product, ProductColor } from "@/types";
 import slugify from "slugify";
 import { deleteMultipleFromStorage } from "@/lib/supabase";
 
@@ -102,7 +102,7 @@ export async function getProducts(filters?: {
 
   const normalizedProducts = products.map((product) => ({
     ...product,
-    colors: (product.colors ?? []) as Product["colors"],
+    colors: (product.colors ?? []) as unknown as Product["colors"],
     linkShopee: product.linkShopee ?? "",
     linkTiktok: product.linkTiktok ?? "",
   }));
@@ -221,11 +221,22 @@ export async function getProductBySlug(slug: string) {
     },
   });
 
-  return product;
+  if (!product) return null;
+
+  return {
+    ...product,
+    colors: (product.colors ?? []) as unknown as ProductColor[],
+  };
 }
 
 export async function getProductById(id: string) {
-  return prisma.product.findUnique({ where: { id } });
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (!product) return null;
+  
+  return {
+    ...product,
+    colors: (product.colors ?? []) as unknown as ProductColor[],
+  };
 }
 
 // ─── UPDATE ───────────────────────────────────────────
@@ -327,5 +338,14 @@ export async function getFeaturedProducts() {
     }),
   ]);
 
-  return { bestSellers, newArrivals };
+  const normalizeProducts = (products: typeof bestSellers) =>
+    products.map((product) => ({
+      ...product,
+      colors: (product.colors ?? []) as unknown as ProductColor[],
+    }));
+
+  return {
+    bestSellers: normalizeProducts(bestSellers),
+    newArrivals: normalizeProducts(newArrivals),
+  };
 }

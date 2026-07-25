@@ -47,8 +47,8 @@ export function ResponsiveBanner({
 
   const src = viewport === "mobile" ? mobileSrc : desktopSrc;
   const imageStyle = {
-    objectFit: fit as const,
-    objectPosition: "center" as const,
+    objectFit: fit,
+    objectPosition: "center",
   };
 
   useEffect(() => {
